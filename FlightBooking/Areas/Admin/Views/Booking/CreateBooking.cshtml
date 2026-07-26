@@ -1,0 +1,80 @@
+﻿@model FlightBooking.Dtos.BookingDtos.CreateBookingDto
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Yeni Rezervasyon";
+    var flights = ViewBag.Flights as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<div id="main-content" style="padding:24px; max-width:820px; margin:0 auto;">
+    <h3 class="mb-4"><i class="bi bi-journal-plus"></i> Yeni Rezervasyon Oluştur</h3>
+
+    <form asp-action="CreateBooking" method="post" class="card p-4 shadow-sm">
+
+        <h6 class="text-muted mb-3">Uçuş ve İletişim Bilgileri</h6>
+
+        <div class="mb-3">
+            <label class="form-label">Uçuş</label>
+            <select name="FlightId" class="form-select" required>
+                <option value="">— Uçuş seçin —</option>
+                @foreach (var f in flights)
+                {
+                    <option value="@f.Value">@f.Text</option>
+                }
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">İletişim Adı</label>
+                <input name="ContactName" class="form-control" required />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">E-posta</label>
+                <input name="ContactEmail" type="email" class="form-control" required />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Telefon</label>
+                <input name="ContactPhone" class="form-control" required />
+            </div>
+        </div>
+
+        <hr />
+        <h6 class="text-muted mb-3">Yolcu Bilgileri</h6>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Ad</label>
+                <input name="Passengers[0].Name" class="form-control" required />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Soyad</label>
+                <input name="Passengers[0].Surname" class="form-control" required />
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Doğum Tarihi</label>
+                <input name="Passengers[0].BirthDate" type="date" class="form-control" required />
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Cinsiyet</label>
+                <select name="Passengers[0].Gender" class="form-select">
+                    <option>Erkek</option>
+                    <option>Kadın</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Tip</label>
+                <select name="Passengers[0].PassengerType" class="form-select">
+                    <option>Yetişkin</option>
+                    <option>Çocuk</option>
+                    <option>Bebek</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Rezervasyonu Kaydet</button>
+            <a asp-action="BookingList" class="btn btn-outline-secondary">İptal</a>
+        </div>
+    </form>
+</div>
