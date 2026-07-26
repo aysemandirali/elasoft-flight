@@ -61,7 +61,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
+// Klasik statik dosya sunumu (wwwroot altindaki css/js/img) — en guvenilir yontem
+app.UseStaticFiles();
 
 // Admin gibi alanlarin (Area) yonlendirmesi — default route'tan once gelmeli
 app.MapControllerRoute(
@@ -70,8 +71,7 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Default}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Default}/{action=Index}/{id?}");
 
 
 app.Run();
