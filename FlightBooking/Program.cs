@@ -3,6 +3,7 @@ using FlightBooking.AgentServices;
 using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.CheckInServices;
 using FlightBooking.Services.FlightServices;
+using FlightBooking.Services.NoShowServices;
 using FlightBooking.Settings;
 using Microsoft.Extensions.Options;
 
@@ -31,6 +32,9 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Check-in servisini DI'a kaydet
 builder.Services.AddScoped<ICheckInService, CheckInService>();
+
+// No-Show / Overbooking servisi
+builder.Services.AddScoped<INoShowService, NoShowService>();
 
 // Gemini (AI asistan) ayarlari ve servisi
 builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection("Gemini"));
