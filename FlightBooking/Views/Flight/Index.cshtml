@@ -1,0 +1,67 @@
+﻿@model List<FlightBooking.Dtos.FlightDtos.ResultFlightDto>
+@{
+    Layout = null;
+    var from = ViewBag.From as string;
+    var to = ViewBag.To as string;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Uçuş Ara</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        body { background:#f1f5f9; }
+        .hero { background:linear-gradient(120deg,#1d4ed8,#0ea5e9); color:#fff; padding:40px 0; }
+        .flight-card { border:none; border-radius:14px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+        .route { font-size:1.35rem; font-weight:700; }
+        .price { font-size:1.4rem; font-weight:700; color:#0ea5e9; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="container">
+            <h2 class="mb-3"><i class="bi bi-airplane-engines"></i> Uçuş Ara</h2>
+            <form method="get" class="row g-2">
+                <div class="col-md-4"><input name="from" value="@from" class="form-control form-control-lg" placeholder="Nereden (örn: IST)" /></div>
+                <div class="col-md-4"><input name="to" value="@to" class="form-control form-control-lg" placeholder="Nereye (örn: LHR)" /></div>
+                <div class="col-md-2"><button class="btn btn-light btn-lg w-100"><i class="bi bi-search"></i> Ara</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="alert alert-warning">Uygun uçuş bulunamadı. Farklı bir arama deneyin.</div>
+        }
+        else
+        {
+            <p class="text-muted">@Model.Count uçuş bulundu.</p>
+            @foreach (var f in Model)
+            {
+                <div class="card flight-card mb-3">
+                    <div class="card-body d-flex flex-wrap align-items-center justify-content-between">
+                        <div>
+                            <div class="route">@f.DepartureAirportCode <i class="bi bi-arrow-right"></i> @f.ArrivalAirportCode</div>
+                            <div class="text-muted">@f.DepartureAirportName → @f.ArrivalAirportName</div>
+                            <div class="small text-secondary mt-1">
+                                <i class="bi bi-airplane"></i> @f.FlightNumber (@f.AirlineCode) ·
+                                <i class="bi bi-calendar"></i> @f.DepartureTime.ToString("dd.MM.yyyy HH:mm") ·
+                                <i class="bi bi-people"></i> @f.AvailableSeats boş koltuk
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="price">@f.BasePrice @f.Currency</div>
+                            <a href="/Flight/Book/@f.FlightId" class="btn btn-primary mt-2"><i class="bi bi-ticket-perforated"></i> Bilet Al</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        <a href="/Default/Index" class="btn btn-outline-secondary mt-2">← Ana sayfa</a>
+    </div>
+</body>
+</html>

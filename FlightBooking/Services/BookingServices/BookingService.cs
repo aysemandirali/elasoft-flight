@@ -18,7 +18,7 @@ namespace FlightBooking.Services.BookingServices
             _flightCollection = database.GetCollection<Flight>(settings.FlightCollectionName);
         }
 
-        public async Task CreateBookingAsync(CreateBookingDto dto)
+        public async Task<string> CreateBookingAsync(CreateBookingDto dto)
         {
             // Once ucusu bul (fiyat hesabi icin)
             var flight = await _flightCollection.Find(x => x.FlightId == dto.FlightId).FirstOrDefaultAsync();
@@ -51,6 +51,7 @@ namespace FlightBooking.Services.BookingServices
             };
 
             await _bookingCollection.InsertOneAsync(booking);
+            return booking.PnrNumber;
         }
 
         public async Task<List<ResultBookingDto>> GetAllBookingsAsync()

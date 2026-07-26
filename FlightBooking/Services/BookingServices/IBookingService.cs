@@ -4,7 +4,7 @@ namespace FlightBooking.Services.BookingServices
 {
     public interface IBookingService
     {
-        Task CreateBookingAsync(CreateBookingDto dto);
+        Task<string> CreateBookingAsync(CreateBookingDto dto); // olusan PNR'yi dondurur
         Task<List<ResultBookingDto>> GetAllBookingsAsync();
     }
 }
