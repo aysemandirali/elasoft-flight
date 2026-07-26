@@ -1,4 +1,16 @@
+using FlightBooking.Settings;
+using Microsoft.Extensions.Options;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// MongoDB ayarlarini appsettings.json'daki "DatabaseSettingsKey" bolumune bagla
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey"));
+
+// Servislerde IDatabaseSettings isteyince ayarlarin degerini dondur
+builder.Services.AddScoped<IDatabaseSettings>(sp =>
+{
+    return sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
