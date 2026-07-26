@@ -1,4 +1,5 @@
 using System.Reflection;
+using FlightBooking.AgentServices;
 using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.CheckInServices;
 using FlightBooking.Services.FlightServices;
@@ -6,6 +7,9 @@ using FlightBooking.Settings;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Gizli anahtarlari tutan yerel ayar dosyasi (git'e gitmez, opsiyonel)
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
 // MongoDB ayarlarini appsettings.json'daki "DatabaseSettingsKey" bolumune bagla
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey"));
@@ -27,6 +31,10 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Check-in servisini DI'a kaydet
 builder.Services.AddScoped<ICheckInService, CheckInService>();
+
+// Gemini (AI asistan) ayarlari ve servisi
+builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection("Gemini"));
+builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
