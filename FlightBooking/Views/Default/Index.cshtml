@@ -60,19 +60,19 @@
 
                                     <div class="tab-content-wrap">
 
-                                        <form class="booking-form">
+                                        <form class="booking-form" id="flightSearchForm" method="get" action="/Flight/Index">
                                             <ul>
 
                                                 <li>
                                                     <div class="form-grp">
-                                                        <input type="text" placeholder="Nereden">
+                                                        <input type="text" name="from" placeholder="Nereden (örn: IST)">
                                                     </div>
                                                 </li>
 
                                                 <li>
                                                     <div class="form-grp">
-                                                        <input type="text" placeholder="Nereye">
-                                                        <button class="exchange-icon">
+                                                        <input type="text" name="to" placeholder="Nereye (örn: LHR)">
+                                                        <button type="button" class="exchange-icon">
                                                             <i class="flaticon-exchange-1"></i>
                                                         </button>
                                                     </div>
@@ -116,7 +116,7 @@
 
                                         <div class="content-bottom">
                                             <a class="promo-code">+ Promosyon Kodu</a>
-                                            <a class="btn">Uçuşları Listele <i class="flaticon-flight-1"></i></a>
+                                            <button type="submit" form="flightSearchForm" class="btn" style="border:none;cursor:pointer;">Uçuşları Listele <i class="flaticon-flight-1"></i></button>
                                         </div>
 
                                     </div>
