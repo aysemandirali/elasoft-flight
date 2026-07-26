@@ -1,0 +1,85 @@
+﻿@model FlightBooking.Entities.Booking
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Online Check-in";
+    var pnr = ViewBag.Pnr as string;
+}
+
+<div id="main-content" style="padding:24px; max-width:900px; margin:0 auto;">
+    <h3 class="mb-4"><i class="bi bi-ticket-perforated"></i> Online Check-in</h3>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-info">@ViewBag.Message</div>
+    }
+
+    <form asp-action="Index" method="post" class="card p-3 shadow-sm mb-4">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label">PNR Kodu</label>
+                <input name="pnr" value="@pnr" class="form-control" placeholder="Örn: A1B2C3" required />
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Sorgula</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model != null)
+    {
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Rezervasyon: <span class="badge bg-dark">@Model.PnrNumber</span> — @Model.ContactName</h6>
+                <table class="table table-hover align-middle mt-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Yolcu</th>
+                            <th>Tip</th>
+                            <th>Durum</th>
+                            <th>Koltuk</th>
+                            <th>Biniş Kartı</th>
+                            <th>Check-in</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Passengers.Count; i++)
+                        {
+                            var p = Model.Passengers[i];
+                            <tr>
+                                <td>@p.Name @p.Surname</td>
+                                <td>@p.PassengerType</td>
+                                <td>
+                                    @if (p.IsCheckedIn)
+                                    {
+                                        <span class="badge bg-success">Check-in yapıldı</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Bekliyor</span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(p.SeatNumber) ? "—" : p.SeatNumber)</td>
+                                <td>@(string.IsNullOrEmpty(p.BoardingPassNumber) ? "—" : p.BoardingPassNumber)</td>
+                                <td>
+                                    @if (!p.IsCheckedIn)
+                                    {
+                                        <form asp-action="Complete" method="post" class="d-flex gap-1">
+                                            <input type="hidden" name="pnr" value="@Model.PnrNumber" />
+                                            <input type="hidden" name="passengerIndex" value="@i" />
+                                            <input name="seatNumber" class="form-control form-control-sm" style="width:90px;" placeholder="14A" required />
+                                            <button type="submit" class="btn btn-sm btn-success">Yap</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
