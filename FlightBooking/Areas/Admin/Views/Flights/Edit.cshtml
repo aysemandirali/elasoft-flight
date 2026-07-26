@@ -1,0 +1,91 @@
+﻿@model FlightBooking.Dtos.FlightDtos.UpdateFlightDto
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Uçuş Düzenle";
+}
+
+<div id="main-content" style="padding:24px; max-width:820px; margin:0 auto;">
+    <h3 class="mb-4"><i class="bi bi-pencil-square"></i> Uçuş Düzenle</h3>
+
+    <form asp-action="Edit" method="post" class="card p-4 shadow-sm">
+        <input type="hidden" asp-for="FlightId" />
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Uçuş No</label>
+                <input asp-for="FlightNumber" class="form-control" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Havayolu Kodu</label>
+                <input asp-for="AirlineCode" class="form-control" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Durum</label>
+                <select asp-for="Status" class="form-select">
+                    <option>Scheduled</option>
+                    <option>Delayed</option>
+                    <option>Cancelled</option>
+                    <option>Completed</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Kalkış Kodu</label>
+                <input asp-for="DepartureAirportCode" class="form-control" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Kalkış Havalimanı</label>
+                <input asp-for="DepartureAirportName" class="form-control" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Varış Kodu</label>
+                <input asp-for="ArrivalAirportCode" class="form-control" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Varış Havalimanı</label>
+                <input asp-for="ArrivalAirportName" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Kalkış Zamanı</label>
+                <input asp-for="DepartureTime" type="datetime-local" class="form-control" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Varış Zamanı</label>
+                <input asp-for="ArrivalTime" type="datetime-local" class="form-control" />
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Süre (dk)</label>
+                <input asp-for="DurationMinutes" type="number" class="form-control" />
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Toplam Koltuk</label>
+                <input asp-for="TotalSeats" type="number" class="form-control" />
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Boş Koltuk</label>
+                <input asp-for="AvailableSeats" type="number" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Temel Fiyat</label>
+                <input asp-for="BasePrice" class="form-control" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Para Birimi</label>
+                <input asp-for="Currency" class="form-control" />
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Güncelle</button>
+            <a asp-action="FlightList" class="btn btn-outline-secondary">İptal</a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,26 @@
+﻿@model FlightBooking.Dtos.FlightDtos.GetFlightByIdDto
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Uçuş Detayı";
+}
+
+<div id="main-content" style="padding:24px; max-width:720px; margin:0 auto;">
+    <h3 class="mb-4"><i class="bi bi-airplane"></i> Uçuş Detayı — @Model.FlightNumber</h3>
+
+    <div class="card shadow-sm">
+        <table class="table m-0">
+            <tr><th style="width:220px;">Uçuş No</th><td>@Model.FlightNumber</td></tr>
+            <tr><th>Havayolu</th><td>@Model.AirlineCode</td></tr>
+            <tr><th>Kalkış</th><td>@Model.DepartureAirportName (@Model.DepartureAirportCode)</td></tr>
+            <tr><th>Varış</th><td>@Model.ArrivalAirportName (@Model.ArrivalAirportCode)</td></tr>
+            <tr><th>Kalkış Zamanı</th><td>@Model.DepartureTime.ToString("dd.MM.yyyy HH:mm")</td></tr>
+            <tr><th>Varış Zamanı</th><td>@Model.ArrivalTime.ToString("dd.MM.yyyy HH:mm")</td></tr>
+            <tr><th>Süre</th><td>@Model.DurationMinutes dk</td></tr>
+            <tr><th>Koltuk</th><td>@Model.AvailableSeats / @Model.TotalSeats boş</td></tr>
+            <tr><th>Fiyat</th><td>@Model.BasePrice @Model.Currency</td></tr>
+            <tr><th>Durum</th><td><span class="badge bg-secondary">@Model.Status</span></td></tr>
+        </table>
+    </div>
+
+    <a asp-action="FlightList" class="btn btn-outline-secondary mt-3">← Listeye Dön</a>
+</div>
