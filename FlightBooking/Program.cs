@@ -1,3 +1,5 @@
+using System.Reflection;
+using FlightBooking.Services.FlightServices;
 using FlightBooking.Settings;
 using Microsoft.Extensions.Options;
 
@@ -11,6 +13,12 @@ builder.Services.AddScoped<IDatabaseSettings>(sp =>
 {
     return sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
 });
+
+// AutoMapper profillerini (GeneralMapping) uygulamaya tani
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+// Ucus servisini DI'a kaydet
+builder.Services.AddScoped<IFlightService, FlightService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
