@@ -1,4 +1,5 @@
 using System.Reflection;
+using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.FlightServices;
 using FlightBooking.Settings;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,9 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 // Ucus servisini DI'a kaydet
 builder.Services.AddScoped<IFlightService, FlightService>();
+
+// Rezervasyon servisini DI'a kaydet
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
