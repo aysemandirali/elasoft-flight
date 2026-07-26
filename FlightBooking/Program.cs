@@ -36,6 +36,9 @@ builder.Services.AddScoped<ICheckInService, CheckInService>();
 // No-Show / Overbooking servisi
 builder.Services.AddScoped<INoShowService, NoShowService>();
 
+// ML.NET no-show tahmin servisi (model bir kez egitilir -> Singleton)
+builder.Services.AddSingleton<FlightBooking.Services.MachineLearningServices.NoShowMlService>();
+
 // Gemini (AI asistan) ayarlari ve servisi
 builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection("Gemini"));
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();

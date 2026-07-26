@@ -13,7 +13,7 @@ namespace FlightBooking.Services.NoShowServices
         // Bir slot icin overbooking onerisi hesapla
         Task<OverbookingRecommendationResult> GenerateRecommendationAsync(string flightSlot, int forecastPassenger, int capacity);
 
-        // Koleksiyon bossa ornek gecmis veriyi yukle
-        Task<int> SeedSampleDataAsync();
+        // Ornek gecmis veriyi yukle. reset=true ise once mevcut veriyi siler.
+        Task<int> SeedSampleDataAsync(bool reset = false);
     }
 }

@@ -65,8 +65,11 @@ namespace FlightBooking.Services.NoShowServices
             };
         }
 
-        public async Task<int> SeedSampleDataAsync()
+        public async Task<int> SeedSampleDataAsync(bool reset = false)
         {
+            if (reset)
+                await _collection.DeleteManyAsync(x => true); // mevcut veriyi temizle
+
             var count = await _collection.CountDocumentsAsync(x => true);
             if (count > 0) return 0; // zaten veri var
 
@@ -81,7 +84,7 @@ namespace FlightBooking.Services.NoShowServices
                 ["Evening-1"] = 16, ["Night-1"] = 20
             };
 
-            for (int day = 1; day <= 6; day++)
+            for (int day = 1; day <= 40; day++)
             {
                 foreach (var slot in slots)
                 {
@@ -96,7 +99,7 @@ namespace FlightBooking.Services.NoShowServices
                     records.Add(new NoShowHistory
                     {
                         Route = "SAW-BGY",
-                        FlightDate = $"2026-01-{day:D2}",
+                        FlightDate = $"2026-{(day / 28) + 1:D2}-{(day % 28) + 1:D2}",
                         FlightSlot = slot,
                         AircraftType = "Airbus A321",
                         Capacity = capacity,

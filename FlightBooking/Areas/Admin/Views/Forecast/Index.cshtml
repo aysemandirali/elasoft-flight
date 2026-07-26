@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "No-Show Tahmini (ML.NET)";
+    var slots = new[] { "Morning-1", "Morning-2", "Afternoon-1", "Evening-1", "Night-1" };
+    var predicted = ViewBag.Predicted as double?;
+}
+
+<div id="main-content" style="padding:24px; max-width:820px; margin:0 auto;">
+    <h3 class="mb-2"><i class="bi bi-cpu"></i> No-Show Tahmini <span class="badge bg-primary">ML.NET</span></h3>
+    <p class="text-muted">Geçmiş uçuş verisiyle eğitilen bir regresyon modeli, verdiğin uçuş için kaç yolcunun gelmeyeceğini tahmin eder.</p>
+
+    @if (TempData["TrainMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["TrainMessage"]</div>
+    }
+
+    <form asp-action="Train" method="post" class="mb-4">
+        <button class="btn btn-outline-primary"><i class="bi bi-gear-fill"></i> Modeli Eğit</button>
+        <small class="text-muted ms-2">(İlk tahminde otomatik de eğitilir)</small>
+    </form>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light"><strong>Tahmin Yap</strong></div>
+        <div class="card-body">
+            <form asp-action="Predict" method="post" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Slot</label>
+                    <select name="flightSlot" class="form-select">
+                        @foreach (var s in slots)
+                        {
+                            <option value="@s" selected="@(ViewBag.FlightSlot as string == s)">@s</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Satılan Bilet</label>
+                    <input name="soldTickets" type="number" class="form-control" value="@(ViewBag.SoldTickets ?? 210)" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Kapasite</label>
+                    <input name="capacity" type="number" class="form-control" value="@(ViewBag.Capacity ?? 220)" />
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100"><i class="bi bi-magic"></i> Tahmin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (predicted != null)
+    {
+        <div class="card shadow-sm mt-4 border-primary">
+            <div class="card-body text-center">
+                <div class="text-muted">Tahmini No-Show Yolcu Sayısı — @ViewBag.FlightSlot</div>
+                <div class="display-5 fw-bold text-primary">@predicted</div>
+                <div class="small text-muted">Model @ViewBag.TrainedCount geçmiş kayıtla eğitildi</div>
+            </div>
+        </div>
+    }
+</div>

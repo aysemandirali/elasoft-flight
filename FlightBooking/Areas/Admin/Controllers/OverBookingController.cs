@@ -34,9 +34,9 @@ namespace FlightBooking.Areas.Admin.Controllers
 
         // Ornek gecmis veriyi yukle
         [HttpPost]
-        public async Task<IActionResult> Seed()
+        public async Task<IActionResult> Seed(bool reset = false)
         {
-            var added = await _noShowService.SeedSampleDataAsync();
+            var added = await _noShowService.SeedSampleDataAsync(reset);
             TempData["SeedMessage"] = added > 0 ? $"{added} örnek kayıt yüklendi." : "Zaten veri mevcut.";
             return RedirectToAction("Index");
         }
