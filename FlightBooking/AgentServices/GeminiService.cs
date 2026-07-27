@@ -10,7 +10,6 @@ namespace FlightBooking.AgentServices
         private readonly HttpClient _httpClient;
         private readonly GeminiSettings _settings;
 
-        // Asistanin kisiligi/gorevi
         private const string SystemPrompt =
             "Sen bir ucus rezervasyon sitesinin Turkce seyahat asistanisin. " +
             "Kullaniciya ucuslar, destinasyonlar, seyahat onerileri ve rezervasyon konularinda " +
@@ -22,7 +21,9 @@ namespace FlightBooking.AgentServices
             _settings = options.Value;
         }
 
-        public async Task<string> AskAsync(string userMessage)
+        public Task<string> AskAsync(string userMessage) => GenerateAsync(SystemPrompt, userMessage);
+
+        public async Task<string> GenerateAsync(string systemInstruction, string userMessage)
         {
             if (string.IsNullOrWhiteSpace(_settings.ApiKey))
                 return "API anahtari ayarlanmamis. appsettings.Local.json dosyasini kontrol et.";
@@ -31,7 +32,7 @@ namespace FlightBooking.AgentServices
 
             var payload = new
             {
-                system_instruction = new { parts = new[] { new { text = SystemPrompt } } },
+                system_instruction = new { parts = new[] { new { text = systemInstruction } } },
                 contents = new[]
                 {
                     new { parts = new[] { new { text = userMessage } } }
@@ -48,7 +49,6 @@ namespace FlightBooking.AgentServices
             if (!response.IsSuccessStatusCode)
                 return "Asistana su an ulasilamadi. (Hata kodu: " + (int)response.StatusCode + ")";
 
-            // Cevaptan metni ayikla: candidates[0].content.parts[0].text
             try
             {
                 using var doc = JsonDocument.Parse(body);

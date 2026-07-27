@@ -54,6 +54,10 @@ builder.Services.AddSingleton<FlightBooking.Services.MachineLearningServices.NoS
 builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection("Gemini"));
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
+// AI Agent: hava durumu araci (tool) + orkestra servisi
+builder.Services.AddHttpClient<IWeatherTool, WeatherTool>();
+builder.Services.AddScoped<ITravelAgentService, TravelAgentService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

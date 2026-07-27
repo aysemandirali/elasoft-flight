@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Controllers
 {
-    // Halka acik AI seyahat asistani sohbet ekrani.
+    // Halka acik AI seyahat asistani (arac kullanan agent).
     public class AgentController : Controller
     {
-        private readonly IGeminiService _geminiService;
+        private readonly ITravelAgentService _agent;
 
-        public AgentController(IGeminiService geminiService)
+        public AgentController(ITravelAgentService agent)
         {
-            _geminiService = geminiService;
+            _agent = agent;
         }
 
         [HttpGet]
@@ -25,7 +25,10 @@ namespace FlightBooking.Controllers
             if (!string.IsNullOrWhiteSpace(message))
             {
                 ViewBag.Question = message;
-                ViewBag.Answer = await _geminiService.AskAsync(message);
+                var result = await _agent.AskAsync(message);
+                ViewBag.City = result.City;
+                ViewBag.Weather = result.Weather; // WeatherInfo?
+                ViewBag.Answer = result.Recommendation;
             }
             return View();
         }
