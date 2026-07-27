@@ -139,6 +139,23 @@
 
     </script>
 
+    <script>
+        // Aktif menuyu, bulundugun sayfaya (URL) gore isaretle
+        document.addEventListener('DOMContentLoaded', function () {
+            var path = window.location.pathname.toLowerCase();
+            // Once tum sabit "active" isaretlerini temizle
+            document.querySelectorAll('.nav-link-item.active, .sub-menu-link.active')
+                .forEach(function (el) { el.classList.remove('active'); });
+            // Sonra mevcut sayfayla eslesen linki isaretle
+            document.querySelectorAll('.nav-link-item, .sub-menu-link').forEach(function (a) {
+                var href = (a.getAttribute('href') || '').toLowerCase();
+                if (href && href !== '#' && path.indexOf(href) === 0) {
+                    a.classList.add('active');
+                }
+            });
+        });
+    </script>
+
     @* ── Sayfa bazlı <script> blokları buraya inject edilir ────────────────── *@
     @RenderSection("Scripts", required: false)
 
