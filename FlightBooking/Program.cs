@@ -50,6 +50,9 @@ builder.Services.AddScoped<INoShowService, NoShowService>();
 // ML.NET no-show tahmin servisi (model bir kez egitilir -> Singleton)
 builder.Services.AddSingleton<FlightBooking.Services.MachineLearningServices.NoShowMlService>();
 
+// ML.NET ucus talep tahmin servisi
+builder.Services.AddSingleton<FlightBooking.Services.MachineLearningServices.FlightDemandMlService>();
+
 // Gemini (AI asistan) ayarlari ve servisi
 builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection("Gemini"));
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();

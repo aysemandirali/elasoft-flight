@@ -84,34 +84,49 @@ namespace FlightBooking.Services.NoShowServices
                 ["Evening-1"] = 16, ["Night-1"] = 20
             };
 
-            for (int day = 1; day <= 40; day++)
+            // Slot bazli temel talep (dolu/bos egilimi)
+            var baseDemand = new Dictionary<string, int>
             {
-                foreach (var slot in slots)
-                {
-                    int capacity = 220;
-                    int sold = 200 + rnd.Next(0, 21);         // 200-220
-                    int noShow = baseNoShow[slot] + rnd.Next(-2, 3);
-                    if (noShow < 0) noShow = 0;
-                    int boarded = sold - noShow;
-                    int online = (int)(boarded * 0.6);
-                    int airport = boarded - online;
+                ["Morning-1"] = 212, ["Morning-2"] = 206, ["Afternoon-1"] = 196,
+                ["Evening-1"] = 216, ["Night-1"] = 184
+            };
 
-                    records.Add(new NoShowHistory
+            // 12 ay boyunca, her ay birkac gun, her slot icin kayit uret
+            for (int month = 1; month <= 12; month++)
+            {
+                // Mevsim etkisi: yaz aylari talep yuksek, kis dusuk
+                int monthFactor = (month is 6 or 7 or 8) ? 10 : (month is 12 or 1 or 2) ? -6 : 0;
+
+                foreach (var day in new[] { 3, 10, 18, 25 })
+                {
+                    foreach (var slot in slots)
                     {
-                        Route = "SAW-BGY",
-                        FlightDate = $"2026-{(day / 28) + 1:D2}-{(day % 28) + 1:D2}",
-                        FlightSlot = slot,
-                        AircraftType = "Airbus A321",
-                        Capacity = capacity,
-                        SoldTickets = sold,
-                        OnlineCheckedIn = online,
-                        AirportCheckedIn = airport,
-                        BoardedPassenger = boarded,
-                        NoShowPassenger = noShow,
-                        OnlineCheckInNoShow = rnd.Next(0, 4),
-                        MissedConnection = rnd.Next(0, 3),
-                        CancelledPassenger = rnd.Next(0, 2)
-                    });
+                        int capacity = 220;
+                        int sold = baseDemand[slot] + monthFactor + rnd.Next(-4, 5);
+                        sold = Math.Clamp(sold, 120, capacity);
+                        int noShow = baseNoShow[slot] + rnd.Next(-2, 3);
+                        if (noShow < 0) noShow = 0;
+                        int boarded = sold - noShow;
+                        int online = (int)(boarded * 0.6);
+                        int airport = boarded - online;
+
+                        records.Add(new NoShowHistory
+                        {
+                            Route = "SAW-BGY",
+                            FlightDate = $"2026-{month:D2}-{day:D2}",
+                            FlightSlot = slot,
+                            AircraftType = "Airbus A321",
+                            Capacity = capacity,
+                            SoldTickets = sold,
+                            OnlineCheckedIn = online,
+                            AirportCheckedIn = airport,
+                            BoardedPassenger = boarded,
+                            NoShowPassenger = noShow,
+                            OnlineCheckInNoShow = rnd.Next(0, 4),
+                            MissedConnection = rnd.Next(0, 3),
+                            CancelledPassenger = rnd.Next(0, 2)
+                        });
+                    }
                 }
             }
 

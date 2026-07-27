@@ -1,0 +1,67 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Uçuş Talep Tahmini (ML.NET)";
+    var slots = new[] { "Morning-1", "Morning-2", "Afternoon-1", "Evening-1", "Night-1" };
+    var months = new[] { "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık" };
+    var predicted = ViewBag.Predicted as int?;
+}
+
+<div class="main-content" id="main-content">
+    <h3 class="mb-2"><i class="bi bi-graph-up"></i> Uçuş Talep Tahmini <span class="badge bg-primary">ML.NET</span></h3>
+    <p class="text-muted">Geçmiş satış verisiyle eğitilen regresyon modeli, seçtiğin uçuş için <strong>kaç bilet satılacağını</strong> (talep/doluluk) tahmin eder.</p>
+
+    @if (TempData["TrainMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["TrainMessage"]</div>
+    }
+
+    <form asp-action="Train" method="post" class="mb-4">
+        <button class="btn btn-outline-primary"><i class="bi bi-gear-fill"></i> Modeli Eğit</button>
+        <small class="text-muted ms-2">(İlk tahminde otomatik de eğitilir)</small>
+    </form>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light"><strong>Talep Tahmini Yap</strong></div>
+        <div class="card-body">
+            <form asp-action="Predict" method="post" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Slot</label>
+                    <select name="flightSlot" class="form-select">
+                        @foreach (var s in slots)
+                        {
+                            <option value="@s" selected="@(ViewBag.FlightSlot as string == s)">@s</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Ay</label>
+                    <select name="month" class="form-select">
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            <option value="@i" selected="@((ViewBag.Month as int?) == i)">@months[i-1]</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Kapasite</label>
+                    <input name="capacity" type="number" class="form-control" value="@(ViewBag.Capacity ?? 220)" />
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100"><i class="bi bi-magic"></i> Tahmin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (predicted != null)
+    {
+        <div class="card shadow-sm mt-4 border-primary">
+            <div class="card-body text-center">
+                <div class="text-muted">Tahmini Satılacak Bilet — @ViewBag.FlightSlot / @months[((ViewBag.Month as int?) ?? 1) - 1]</div>
+                <div class="display-5 fw-bold text-primary">@predicted</div>
+                <div class="mt-1"><span class="badge bg-success">Doluluk ~%@ViewBag.LoadFactor</span></div>
+                <div class="small text-muted mt-1">Model @ViewBag.TrainedCount geçmiş kayıtla eğitildi</div>
+            </div>
+        </div>
+    }
+</div>
