@@ -1,8 +1,10 @@
 ﻿using FlightBooking.Services.CheckInServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Areas.Admin.Controllers
 {
+    [Authorize]
     [Area("Admin")]
     public class CheckInController : Controller
     {

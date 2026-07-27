@@ -1,6 +1,8 @@
 using System.Reflection;
 using FlightBooking.AgentServices;
+using FlightBooking.Services.AccountServices;
 using FlightBooking.Services.BookingServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using FlightBooking.Services.CheckInServices;
 using FlightBooking.Services.FlightServices;
 using FlightBooking.Services.NoShowServices;
@@ -33,6 +35,15 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 // Check-in servisini DI'a kaydet
 builder.Services.AddScoped<ICheckInService, CheckInService>();
 
+// Uyelik/giris servisi + cerez tabanli kimlik dogrulama
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/Login";
+    });
+
 // No-Show / Overbooking servisi
 builder.Services.AddScoped<INoShowService, NoShowService>();
 
@@ -59,6 +70,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Klasik statik dosya sunumu (wwwroot altindaki css/js/img) — en guvenilir yontem

@@ -1,9 +1,11 @@
 ﻿using FlightBooking.Dtos.FlightDtos;
 using FlightBooking.Services.FlightServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Areas.Admin.Controllers
 {
+    [Authorize]
     [Area("Admin")]
     public class FlightsController : Controller
     {

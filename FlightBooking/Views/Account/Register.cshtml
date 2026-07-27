@@ -1,0 +1,52 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Üye Ol</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        body { background:linear-gradient(120deg,#1d4ed8,#0ea5e9); min-height:100vh; display:flex; align-items:center; }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width:440px;">
+        <div class="card shadow-lg border-0 p-4">
+            <div class="text-center mb-3">
+                <i class="bi bi-person-plus-fill" style="font-size:40px; color:#1d4ed8;"></i>
+                <h4 class="mt-2">Üye Ol</h4>
+            </div>
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger py-2">@ViewBag.Error</div>
+            }
+            <form asp-controller="Account" asp-action="Register" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Ad Soyad</label>
+                    <input name="fullName" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">E-posta</label>
+                    <input name="email" type="email" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Şifre</label>
+                    <input name="password" type="password" class="form-control" minlength="4" required />
+                </div>
+                <button class="btn btn-primary w-100 py-2">Kayıt Ol</button>
+            </form>
+            <div class="text-center mt-3">
+                <span class="text-muted">Zaten üye misin?</span>
+                <a asp-controller="Account" asp-action="Login">Giriş Yap</a>
+            </div>
+            <div class="text-center mt-2">
+                <a href="/" class="text-muted small">← Ana sayfaya dön</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
