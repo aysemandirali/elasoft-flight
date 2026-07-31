@@ -3,6 +3,7 @@
     Layout = null;
     var question = ViewBag.Question as string;
     var answer = ViewBag.Answer as string;
+    var intent = ViewBag.Intent as string;
     var city = ViewBag.City as string;
     var weather = ViewBag.Weather as WeatherInfo;
 }
@@ -36,6 +37,7 @@
             <div class="bubble user"><i class="bi bi-person-fill"></i> @question</div>
 
             <div class="steps">
+                <div class="step"><i class="bi bi-bullseye"></i> Niyet tespiti → <b>@(string.IsNullOrEmpty(intent) ? "—" : intent)</b></div>
                 <div class="step"><i class="bi bi-search"></i> Şehir tespiti → <b>@(string.IsNullOrEmpty(city) ? "belirlenemedi" : city)</b></div>
                 @if (weather != null)
                 {

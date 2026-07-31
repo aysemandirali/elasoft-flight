@@ -1,8 +1,13 @@
-﻿namespace FlightBooking.AgentServices
+﻿using FlightBooking.AgentServices.CityDetectors;
+using FlightBooking.AgentServices.IntentDetectors;
+using FlightBooking.AgentServices.PromptBuilders;
+
+namespace FlightBooking.AgentServices
 {
     // Agent'in urettigi sonuc (hangi adimlari yaptigini da tasir).
     public class AgentResult
     {
+        public string Intent { get; set; } = string.Empty;
         public string? City { get; set; }
         public WeatherInfo? Weather { get; set; }
         public string Recommendation { get; set; } = string.Empty;
@@ -13,48 +18,55 @@
         Task<AgentResult> AskAsync(string message);
     }
 
-    // LLM (Gemini) + arac (hava durumu) + karar zincirini yoneten agent.
+    // Moduler bilesenleri (niyet + sehir + arac + prompt + LLM) yoneten agent.
     public class TravelAgentService : ITravelAgentService
     {
-        private readonly IGeminiService _gemini;
+        private readonly IIntentDetector _intentDetector;
+        private readonly ICityExtractor _cityExtractor;
         private readonly IWeatherTool _weatherTool;
+        private readonly ITravelPromptBuilder _promptBuilder;
+        private readonly IGeminiService _gemini;
 
-        public TravelAgentService(IGeminiService gemini, IWeatherTool weatherTool)
+        public TravelAgentService(
+            IIntentDetector intentDetector,
+            ICityExtractor cityExtractor,
+            IWeatherTool weatherTool,
+            ITravelPromptBuilder promptBuilder,
+            IGeminiService gemini)
         {
-            _gemini = gemini;
+            _intentDetector = intentDetector;
+            _cityExtractor = cityExtractor;
             _weatherTool = weatherTool;
+            _promptBuilder = promptBuilder;
+            _gemini = gemini;
         }
 
         public async Task<AgentResult> AskAsync(string message)
         {
-            // 1) ADIM: Mesajdan gidilmek istenen sehri cikar (city extraction)
-            var city = await _gemini.GenerateAsync(
-                "Sen bir varlik cikarma aracisin. Kullanicinin mesajindan gitmek/seyahat etmek istedigi SEHRI bul. " +
-                "SADECE sehir adini tek kelime olarak dondur. Sehir yoksa sadece 'YOK' yaz. Baska hicbir sey yazma.",
-                message);
-            city = city.Trim().Split('\n')[0].Trim().TrimEnd('.', ',');
+            // 1) Niyet tespiti
+            var intent = _intentDetector.Detect(message);
 
-            // 2) ADIM: Sehir bulunduysa hava durumu aracini calistir (tool calling)
+            // 2) Sehir cikarma
+            var city = await _cityExtractor.ExtractCityAsync(message);
+
+            // 3) Sehir varsa hava durumu aracini calistir
             WeatherInfo? weather = null;
-            if (!string.IsNullOrWhiteSpace(city) && !city.Equals("YOK", StringComparison.OrdinalIgnoreCase) && city.Length <= 40)
-            {
+            if (!string.IsNullOrWhiteSpace(city))
                 weather = await _weatherTool.GetWeatherAsync(city);
-            }
 
-            // 3) ADIM: Toplanan bilgilerle LLM'e nihai oneriyi olustur
-            var context = weather != null
-                ? $"\n\n[Arac verisi] {weather.City} icin hava: {weather.Temperature}°C, {weather.Description}. Bu hava durumuna uygun oneriler de ekle."
-                : "";
+            // 4) Prompt hazirla ve LLM'e sor
+            string? weatherContext = weather != null
+                ? $"{weather.City} icin hava: {weather.Temperature}°C, {weather.Description}."
+                : null;
 
             var recommendation = await _gemini.GenerateAsync(
-                "Sen bir ucus rezervasyon sitesinin Turkce seyahat asistanisin. Kullaniciya kisa, samimi ve pratik " +
-                "seyahat onerileri ver (gezilecek yerler, ne yapilir, ne giyilir). Sana bir arac verisi (hava durumu) " +
-                "verildiyse onu mutlaka dikkate al. Cevabin Turkce olsun.",
-                message + context);
+                _promptBuilder.BuildSystemPrompt(),
+                _promptBuilder.BuildUserPrompt(message, weatherContext));
 
             return new AgentResult
             {
-                City = weather?.City ?? (city.Equals("YOK", StringComparison.OrdinalIgnoreCase) ? null : city),
+                Intent = intent.ToString(),
+                City = weather?.City ?? city,
                 Weather = weather,
                 Recommendation = recommendation
             };

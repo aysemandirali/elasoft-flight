@@ -64,6 +64,11 @@ builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 builder.Services.AddHttpClient<IWeatherTool, WeatherTool>();
 builder.Services.AddScoped<ITravelAgentService, TravelAgentService>();
 
+// AI Agent moduler bilesenleri: niyet tespiti + sehir cikarma + prompt hazirlama
+builder.Services.AddScoped<FlightBooking.AgentServices.IntentDetectors.IIntentDetector, FlightBooking.AgentServices.IntentDetectors.TravelIntentDetector>();
+builder.Services.AddScoped<FlightBooking.AgentServices.CityDetectors.ICityExtractor, FlightBooking.AgentServices.CityDetectors.GeminiCityExtractor>();
+builder.Services.AddScoped<FlightBooking.AgentServices.PromptBuilders.ITravelPromptBuilder, FlightBooking.AgentServices.PromptBuilders.TravelPromptBuilder>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

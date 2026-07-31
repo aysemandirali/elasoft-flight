@@ -26,6 +26,7 @@ namespace FlightBooking.Controllers
             {
                 ViewBag.Question = message;
                 var result = await _agent.AskAsync(message);
+                ViewBag.Intent = result.Intent;
                 ViewBag.City = result.City;
                 ViewBag.Weather = result.Weather; // WeatherInfo?
                 ViewBag.Answer = result.Recommendation;
