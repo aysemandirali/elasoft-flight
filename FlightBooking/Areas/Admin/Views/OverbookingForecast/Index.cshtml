@@ -1,0 +1,105 @@
+﻿@model List<FlightBooking.Dtos.OverBookingDtos.OverbookingForecastResultDto>
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Overbooking Tahmin Paneli";
+    var months = new[] { "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık" };
+    int dataCount = (int)(ViewBag.DataCount ?? 0);
+    int selMonth = (int)(ViewBag.Month ?? 7);
+    var totalExtra = Model?.Sum(x => x.ExtraSeatCount) ?? 0;
+    var totalRevenue = Model?.Sum(x => x.EstimatedRevenue) ?? 0;
+    var topRisk = Model?.OrderByDescending(x => x.PredictedNoShow).FirstOrDefault();
+}
+
+<div class="main-content" id="main-content">
+    <h3 class="mb-1"><i class="bi bi-clipboard-data"></i> Overbooking Tahmin Paneli <span class="badge bg-primary">AI</span></h3>
+    <p class="text-muted mb-4">Talep ve no-show ML modellerini birleştirerek her slot için önerilen satış ve tahmini geliri gösterir.</p>
+
+    @if (dataCount < 5)
+    {
+        <div class="alert alert-warning d-flex justify-content-between align-items-center">
+            <span>Tahmin için yeterli geçmiş veri yok. Önce örnek veriyi yükleyin.</span>
+            <a href="/Admin/OverBooking/Index" class="btn btn-primary btn-sm">Overbooking sayfasına git</a>
+        </div>
+    }
+    else
+    {
+        <!-- Parametre formu -->
+        <form method="get" class="card p-3 shadow-sm mb-4">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Ay</label>
+                    <select name="month" class="form-select">
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            <option value="@i" selected="@(selMonth == i)">@months[i-1]</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Kapasite</label>
+                    <input name="capacity" type="number" class="form-control" value="@ViewBag.Capacity" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Ortalama Bilet Fiyatı (₺)</label>
+                    <input name="averagePrice" type="number" class="form-control" value="@ViewBag.AveragePrice" />
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100"><i class="bi bi-arrow-repeat"></i> Tahminle</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Özet kartlar -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0"><div class="card-body">
+                    <div class="text-muted small">Toplam Ekstra Satılabilir Koltuk</div>
+                    <div class="display-6 fw-bold text-success">+@totalExtra</div>
+                </div></div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0"><div class="card-body">
+                    <div class="text-muted small">Tahmini Toplam Gelir</div>
+                    <div class="display-6 fw-bold text-primary">@totalRevenue.ToString("N0") ₺</div>
+                </div></div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0"><div class="card-body">
+                    <div class="text-muted small">En Riskli Slot</div>
+                    <div class="display-6 fw-bold text-danger">@(topRisk?.FlightSlot ?? "—")</div>
+                    <div class="small text-secondary">@(topRisk?.PredictedNoShow ?? 0) tahmini no-show</div>
+                </div></div>
+            </div>
+        </div>
+
+        <!-- Tahmin tablosu -->
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle m-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Slot</th><th>Kapasite</th><th>Tahmini Talep</th><th>Tahmini No-Show</th>
+                            <th>Önerilen Max Satış</th><th>Ekstra Koltuk</th><th>Risk</th><th>Tahmini Gelir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            var badge = r.RiskLevel == "High" ? "bg-danger" : r.RiskLevel == "Medium" ? "bg-warning text-dark" : "bg-success";
+                            <tr>
+                                <td><strong>@r.FlightSlot</strong></td>
+                                <td>@r.Capacity</td>
+                                <td>@r.ForecastPassenger</td>
+                                <td>@r.PredictedNoShow</td>
+                                <td class="text-primary fw-bold">@r.RecommendedMaxSale</td>
+                                <td class="text-success fw-bold">+@r.ExtraSeatCount</td>
+                                <td><span class="badge @badge">@r.RiskLevel</span></td>
+                                <td>@r.EstimatedRevenue.ToString("N0") ₺</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
