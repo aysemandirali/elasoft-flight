@@ -7,7 +7,9 @@ namespace FlightBooking.Services.CheckInServices
         // PNR ile rezervasyonu (yolcularıyla birlikte) getir
         Task<Booking?> GetBookingByPnrAsync(string pnr);
 
-        // Rezervasyondaki belirli bir yolcuyu check-in yap (koltuk atar, biniş kartı üretir)
-        Task CheckInPassengerAsync(string pnr, int passengerIndex, string seatNumber);
+        // Bir yolcuyu check-in yap: koltuk atar, ek hizmetleri (bagaj/yemek/koltuk)
+        // uygular, biniş kartı üretir ve ayrı bir CheckIn kaydı (log) oluşturur.
+        Task CheckInPassengerAsync(string pnr, int passengerIndex, string seatNumber,
+                                   int extraBaggageKg, string? mealType, bool seatUpgrade);
     }
 }

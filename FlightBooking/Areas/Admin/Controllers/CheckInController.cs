@@ -36,9 +36,11 @@ namespace FlightBooking.Areas.Admin.Controllers
 
         // Bir yolcuyu check-in yap, sonra ayni PNR'yi tekrar goster
         [HttpPost]
-        public async Task<IActionResult> Complete(string pnr, int passengerIndex, string seatNumber)
+        public async Task<IActionResult> Complete(string pnr, int passengerIndex, string seatNumber,
+                                                  int extraBaggageKg, string? mealType, bool seatUpgrade)
         {
-            await _checkInService.CheckInPassengerAsync(pnr, passengerIndex, seatNumber);
+            await _checkInService.CheckInPassengerAsync(pnr, passengerIndex, seatNumber,
+                                                        extraBaggageKg, mealType, seatUpgrade);
             var booking = await _checkInService.GetBookingByPnrAsync(pnr);
             ViewBag.Pnr = pnr;
             ViewBag.Message = "Check-in tamamlandı ✔";
