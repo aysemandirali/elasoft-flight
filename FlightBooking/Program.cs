@@ -53,6 +53,9 @@ builder.Services.AddSingleton<FlightBooking.Services.MachineLearningServices.NoS
 // ML.NET ucus talep tahmin servisi
 builder.Services.AddSingleton<FlightBooking.Services.MachineLearningServices.FlightDemandMlService>();
 
+// Iki ML modelini + overbooking + geliri birlestiren tahmin servisi
+builder.Services.AddScoped<FlightBooking.Services.MachineLearningServices.OverbookingForecastService>();
+
 // Gemini (AI asistan) ayarlari ve servisi
 builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection("Gemini"));
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
