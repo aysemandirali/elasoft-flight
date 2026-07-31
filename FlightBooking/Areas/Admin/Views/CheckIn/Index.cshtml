@@ -27,24 +27,17 @@
 
     @if (Model != null)
     {
-        <div class="card shadow-sm">
+        <!-- Rezervasyondaki yolcuların durumu -->
+        <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <h6 class="text-muted">Rezervasyon: <span class="badge bg-dark">@Model.PnrNumber</span> — @Model.ContactName</h6>
                 <table class="table table-hover align-middle mt-3">
                     <thead class="table-light">
-                        <tr>
-                            <th>Yolcu</th>
-                            <th>Tip</th>
-                            <th>Durum</th>
-                            <th>Koltuk</th>
-                            <th>Biniş Kartı</th>
-                            <th>Check-in</th>
-                        </tr>
+                        <tr><th>Yolcu</th><th>Tip</th><th>Durum</th><th>Koltuk</th><th>Biniş Kartı</th></tr>
                     </thead>
                     <tbody>
-                        @for (int i = 0; i < Model.Passengers.Count; i++)
+                        @foreach (var p in Model.Passengers)
                         {
-                            var p = Model.Passengers[i];
                             <tr>
                                 <td>@p.Name @p.Surname</td>
                                 <td>@p.PassengerType</td>
@@ -60,26 +53,92 @@
                                 </td>
                                 <td>@(string.IsNullOrEmpty(p.SeatNumber) ? "—" : p.SeatNumber)</td>
                                 <td>@(string.IsNullOrEmpty(p.BoardingPassNumber) ? "—" : p.BoardingPassNumber)</td>
-                                <td>
-                                    @if (!p.IsCheckedIn)
-                                    {
-                                        <form asp-action="Complete" method="post" class="d-flex gap-1">
-                                            <input type="hidden" name="pnr" value="@Model.PnrNumber" />
-                                            <input type="hidden" name="passengerIndex" value="@i" />
-                                            <input name="seatNumber" class="form-control form-control-sm" style="width:90px;" placeholder="14A" required />
-                                            <button type="submit" class="btn btn-sm btn-success">Yap</button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <i class="bi bi-check-circle-fill text-success"></i>
-                                    }
-                                </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <!-- Bekleyen her yolcu için ek hizmetli check-in formu -->
+        @for (int i = 0; i < Model.Passengers.Count; i++)
+        {
+            var p = Model.Passengers[i];
+            if (!p.IsCheckedIn)
+            {
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-light">
+                        <strong><i class="bi bi-person-check"></i> @p.Name @p.Surname</strong> için check-in
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Complete" method="post" class="checkin-form">
+                            <input type="hidden" name="pnr" value="@Model.PnrNumber" />
+                            <input type="hidden" name="passengerIndex" value="@i" />
+
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Koltuk No</label>
+                                    <input name="seatNumber" class="form-control" placeholder="14A" required />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Ek Bagaj</label>
+                                    <select name="extraBaggageKg" class="form-select js-extra" data-price="0">
+                                        <option value="0" data-price="0">Yok</option>
+                                        <option value="10" data-price="150">+10 kg (150 ₺)</option>
+                                        <option value="20" data-price="300">+20 kg (300 ₺)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Yemek</label>
+                                    <select name="mealType" class="form-select js-extra" data-price="0">
+                                        <option value="Yok" data-price="0">Yok</option>
+                                        <option value="Standart" data-price="50">Standart (50 ₺)</option>
+                                        <option value="Vejetaryen" data-price="80">Vejetaryen (80 ₺)</option>
+                                        <option value="Premium Menü" data-price="150">Premium Menü (150 ₺)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Koltuk Yükseltme</label>
+                                    <div class="form-check mt-2">
+                                        <input type="hidden" name="seatUpgrade" value="false" />
+                                        <input type="checkbox" name="seatUpgrade" value="true" class="form-check-input js-extra" data-price="100" />
+                                        <label class="form-check-label">Ön Sıra (+100 ₺)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>Ek Hizmet Toplamı: <strong class="js-total text-primary">0 ₺</strong></div>
+                                <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Check-in'i Tamamla</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
     }
 </div>
+
+@section Scripts {
+    <script>
+        // Her check-in formunda ek hizmet toplamini canli hesapla
+        function hesaplaToplam(form) {
+            let toplam = 0;
+            form.querySelectorAll('.js-extra').forEach(function (el) {
+                if (el.type === 'checkbox') {
+                    if (el.checked) toplam += parseInt(el.dataset.price || '0');
+                } else {
+                    var opt = el.options[el.selectedIndex];
+                    toplam += parseInt(opt.dataset.price || '0');
+                }
+            });
+            form.querySelector('.js-total').textContent = toplam + ' ₺';
+        }
+
+        document.querySelectorAll('.checkin-form').forEach(function (form) {
+            form.querySelectorAll('.js-extra').forEach(function (el) {
+                el.addEventListener('change', function () { hesaplaToplam(form); });
+            });
+        });
+    </script>
+}
