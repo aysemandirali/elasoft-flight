@@ -1,0 +1,70 @@
+﻿@model List<FlightBooking.Dtos.BookingDtos.ResultBookingDto>
+@{
+    Layout = null;
+    var fullName = ViewBag.FullName as string;
+    var email = ViewBag.Email as string;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hesabım</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style> body { background:#f1f5f9; } .hero { background:linear-gradient(120deg,#1d4ed8,#0ea5e9); color:#fff; padding:48px 0; } </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h2 class="mb-1"><i class="bi bi-person-circle"></i> Merhaba, @fullName</h2>
+                <p class="mb-0 opacity-75">@email</p>
+            </div>
+            <a href="/Account/Logout" class="btn btn-light"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</a>
+        </div>
+    </div>
+
+    <div class="container py-4" style="max-width:960px;">
+        <!-- Hızlı erişim -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><a href="/Flight/Index" class="btn btn-outline-primary w-100 py-3"><i class="bi bi-search"></i> Uçuş Ara</a></div>
+            <div class="col-md-3"><a href="/Flight/MyBooking" class="btn btn-outline-success w-100 py-3"><i class="bi bi-journal-bookmark"></i> Seyahatlerim</a></div>
+            <div class="col-md-3"><a href="/Flight/CheckIn" class="btn btn-outline-secondary w-100 py-3"><i class="bi bi-ticket-perforated"></i> Online Check-in</a></div>
+            <div class="col-md-3"><a href="/Flight/FlightStatus" class="btn btn-outline-info w-100 py-3"><i class="bi bi-clock-history"></i> Uçuş Durumu</a></div>
+        </div>
+
+        <h5 class="mb-3">Rezervasyonlarım</h5>
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="alert alert-info">Bu hesaba ait rezervasyon bulunamadı. <a href="/Flight/Index">Hemen bir uçuş arayın</a>.
+                <div class="small text-muted mt-1">Not: Rezervasyonlar, bilet alırken girdiğiniz e-posta (@email) ile eşleştirilir.</div>
+            </div>
+        }
+        else
+        {
+            <div class="card shadow-sm border-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle m-0">
+                        <thead class="table-light"><tr><th>PNR</th><th>Yolcu</th><th>Tutar</th><th>Tarih</th><th>Durum</th></tr></thead>
+                        <tbody>
+                            @foreach (var b in Model)
+                            {
+                                <tr>
+                                    <td><span class="badge bg-dark">@b.PnrNumber</span></td>
+                                    <td>@b.PassengerCount</td>
+                                    <td>@b.TotalPrice TL</td>
+                                    <td>@b.BookingDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td><span class="badge bg-success">@b.Status</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <a href="/" class="btn btn-outline-secondary mt-4">← Ana sayfa</a>
+    </div>
+</body>
+</html>

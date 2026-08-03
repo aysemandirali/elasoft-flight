@@ -1,7 +1,9 @@
 ﻿using System.Security.Claims;
 using FlightBooking.Services.AccountServices;
+using FlightBooking.Services.BookingServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Controllers
@@ -9,10 +11,24 @@ namespace FlightBooking.Controllers
     public class AccountController : Controller
     {
         private readonly IAuthService _authService;
+        private readonly IBookingService _bookingService;
 
-        public AccountController(IAuthService authService)
+        public AccountController(IAuthService authService, IBookingService bookingService)
         {
             _authService = authService;
+            _bookingService = bookingService;
+        }
+
+        // Müşteri hesap sayfası (Hesabım): kendi rezervasyonlarını gösterir
+        [Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
+            var all = await _bookingService.GetAllBookingsAsync();
+            var myBookings = all.Where(b => b.ContactEmail.Equals(email, StringComparison.OrdinalIgnoreCase)).ToList();
+            ViewBag.FullName = User.Identity?.Name;
+            ViewBag.Email = email;
+            return View(myBookings);
         }
 
         [HttpGet]
@@ -43,16 +59,20 @@ namespace FlightBooking.Controllers
                 return View();
             }
 
-            // Cerez tabanli oturum ac
+            // Cerez tabanli oturum ac (rol dahil)
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
             };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
-            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            // Role gore yonlendir: admin -> panel, musteri -> Hesabim
+            if (user.Role == "Admin")
+                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            return RedirectToAction("Profile");
         }
 
         public async Task<IActionResult> Logout()
