@@ -111,6 +111,21 @@ namespace FlightBooking.Controllers
             return RedirectToAction("CheckIn", new { pnr });
         }
 
+        // Uçuş durumu sorgulama: uçuş numarasına göre uçuşları ve durumlarını göster
+        [HttpGet]
+        public async Task<IActionResult> FlightStatus(string? flightNumber)
+        {
+            ViewBag.Searched = !string.IsNullOrWhiteSpace(flightNumber);
+            ViewBag.FlightNumber = flightNumber;
+
+            var all = await _flightService.GetAllFlightsAsync();
+            var results = string.IsNullOrWhiteSpace(flightNumber)
+                ? all.OrderBy(x => x.DepartureTime).Take(10).ToList()
+                : all.Where(x => x.FlightNumber.Contains(flightNumber.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+
+            return View(results);
+        }
+
         public IActionResult Confirmation()
         {
             ViewBag.Pnr = TempData["Pnr"] as string;

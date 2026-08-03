@@ -200,13 +200,13 @@
 
                                     <div class="tab-content-wrap">
 
-                                        <form class="booking-form">
+                                        <form class="booking-form" id="flightStatusForm" method="get" action="/Flight/FlightStatus">
                                             <ul>
 
                                                 <li>
                                                     <div class="form-grp">
                                                         <label>Uçuş Numarası</label>
-                                                        <input type="text" placeholder="Örn: TK1234">
+                                                        <input type="text" name="flightNumber" placeholder="Örn: TK1234">
                                                     </div>
                                                 </li>
 
@@ -221,7 +221,7 @@
                                         </form>
 
                                         <div class="content-bottom">
-                                            <a class="btn">Uçuşu Sorgula</a>
+                                            <button type="submit" form="flightStatusForm" class="btn" style="border:none;cursor:pointer;">Uçuşu Sorgula</button>
                                         </div>
 
                                     </div>
