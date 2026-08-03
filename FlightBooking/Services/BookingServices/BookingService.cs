@@ -54,6 +54,11 @@ namespace FlightBooking.Services.BookingServices
             return booking.PnrNumber;
         }
 
+        public async Task<Booking?> GetByPnrAsync(string pnr)
+        {
+            return await _bookingCollection.Find(x => x.PnrNumber == pnr).FirstOrDefaultAsync();
+        }
+
         public async Task<List<ResultBookingDto>> GetAllBookingsAsync()
         {
             var bookings = await _bookingCollection.Find(x => true).ToListAsync();

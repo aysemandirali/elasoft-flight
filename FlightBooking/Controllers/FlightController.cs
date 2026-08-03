@@ -1,4 +1,5 @@
 ﻿using FlightBooking.Dtos.BookingDtos;
+using FlightBooking.Entities;
 using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.FlightServices;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,28 @@ namespace FlightBooking.Controllers
 
         // Onay sayfasi (PNR gosterir)
         [HttpGet]
+        // Rezervasyon sorgulama (Seyahatlerim): PNR + soyad ile rezervasyonu göster
+        [HttpGet]
+        public async Task<IActionResult> MyBooking(string? pnr, string? surname)
+        {
+            ViewBag.Searched = !string.IsNullOrWhiteSpace(pnr);
+            ViewBag.Pnr = pnr;
+            ViewBag.Surname = surname;
+
+            if (string.IsNullOrWhiteSpace(pnr))
+                return View((Booking?)null);
+
+            var booking = await _bookingService.GetByPnrAsync(pnr.Trim().ToUpper());
+
+            // Soyad girildiyse doğrula
+            if (booking != null && !string.IsNullOrWhiteSpace(surname) &&
+                !booking.Passengers.Any(p => p.Surname.Equals(surname.Trim(), StringComparison.OrdinalIgnoreCase)))
+                booking = null;
+
+            ViewBag.Flight = booking != null ? await _flightService.GetFlightByIdAsync(booking.FlightId) : null;
+            return View(booking);
+        }
+
         public IActionResult Confirmation()
         {
             ViewBag.Pnr = TempData["Pnr"] as string;
