@@ -74,6 +74,13 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+// Uygulama acilirken sistemde bir admin hesabi olmasini garanti et
+using (var scope = app.Services.CreateScope())
+{
+    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+    await authService.EnsureDefaultAdminAsync();
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

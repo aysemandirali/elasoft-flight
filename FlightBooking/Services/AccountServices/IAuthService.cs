@@ -6,5 +6,6 @@ namespace FlightBooking.Services.AccountServices
     {
         Task<bool> RegisterAsync(string fullName, string email, string password);
         Task<AppUser?> ValidateLoginAsync(string email, string password);
+        Task EnsureDefaultAdminAsync();
     }
 }
