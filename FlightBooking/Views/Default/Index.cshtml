@@ -165,20 +165,20 @@
 
                                     <div class="tab-content-wrap">
 
-                                        <form class="booking-form">
+                                        <form class="booking-form" id="checkInForm" method="get" action="/Flight/CheckIn">
                                             <ul>
 
                                                 <li>
                                                     <div class="form-grp">
                                                         <label>Rezervasyon Kodu</label>
-                                                        <input type="text" placeholder="PNR kodu">
+                                                        <input type="text" name="pnr" placeholder="PNR kodu">
                                                     </div>
                                                 </li>
 
                                                 <li>
                                                     <div class="form-grp">
                                                         <label>Soyad</label>
-                                                        <input type="text" placeholder="Soyad">
+                                                        <input type="text" name="surname" placeholder="Soyad">
                                                     </div>
                                                 </li>
 
@@ -186,7 +186,7 @@
                                         </form>
 
                                         <div class="content-bottom">
-                                            <a class="btn">Check-in Yap</a>
+                                            <button type="submit" form="checkInForm" class="btn" style="border:none;cursor:pointer;">Check-in Yap</button>
                                         </div>
 
                                     </div>

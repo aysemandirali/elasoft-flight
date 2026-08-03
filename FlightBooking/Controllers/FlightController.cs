@@ -1,21 +1,24 @@
 ﻿using FlightBooking.Dtos.BookingDtos;
 using FlightBooking.Entities;
 using FlightBooking.Services.BookingServices;
+using FlightBooking.Services.CheckInServices;
 using FlightBooking.Services.FlightServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Controllers
 {
-    // Halka acik (musteri) ucus arama ve bilet alma.
+    // Halka acik (musteri) ucus arama, bilet alma, seyahat sorgulama ve check-in.
     public class FlightController : Controller
     {
         private readonly IFlightService _flightService;
         private readonly IBookingService _bookingService;
+        private readonly ICheckInService _checkInService;
 
-        public FlightController(IFlightService flightService, IBookingService bookingService)
+        public FlightController(IFlightService flightService, IBookingService bookingService, ICheckInService checkInService)
         {
             _flightService = flightService;
             _bookingService = bookingService;
+            _checkInService = checkInService;
         }
 
         // Ucus listesi + basit arama (kalkis/varis koduna gore)
@@ -76,6 +79,36 @@ namespace FlightBooking.Controllers
 
             ViewBag.Flight = booking != null ? await _flightService.GetFlightByIdAsync(booking.FlightId) : null;
             return View(booking);
+        }
+
+        // Müşteri online check-in: PNR + soyad ile rezervasyonu getir, yolcuları göster
+        [HttpGet]
+        public async Task<IActionResult> CheckIn(string? pnr, string? surname)
+        {
+            ViewBag.Searched = !string.IsNullOrWhiteSpace(pnr);
+            ViewBag.Pnr = pnr;
+            ViewBag.Surname = surname;
+
+            if (string.IsNullOrWhiteSpace(pnr))
+                return View((Booking?)null);
+
+            var booking = await _bookingService.GetByPnrAsync(pnr.Trim().ToUpper());
+            if (booking != null && !string.IsNullOrWhiteSpace(surname) &&
+                !booking.Passengers.Any(p => p.Surname.Equals(surname.Trim(), StringComparison.OrdinalIgnoreCase)))
+            {
+                booking = null;
+                ViewBag.NotFound = true;
+            }
+            return View(booking);
+        }
+
+        // Müşteri check-in'i tamamla (koltuk + ek hizmet), sonra aynı PNR'ı tekrar göster
+        [HttpPost]
+        public async Task<IActionResult> CheckInComplete(string pnr, int passengerIndex, string seatNumber,
+                                                         int extraBaggageKg, string? mealType, bool seatUpgrade)
+        {
+            await _checkInService.CheckInPassengerAsync(pnr, passengerIndex, seatNumber, extraBaggageKg, mealType, seatUpgrade);
+            return RedirectToAction("CheckIn", new { pnr });
         }
 
         public IActionResult Confirmation()
