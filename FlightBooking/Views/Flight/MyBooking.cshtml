@@ -40,7 +40,7 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="m-0">Rezervasyon <span class="badge bg-dark ms-1" style="letter-spacing:2px;">@Model.PnrNumber</span></h5>
-                        <span class="badge bg-success fs-6">@Model.Status</span>
+                        <span class="badge bg-success fs-6">@(Model.Status == "Confirmed" ? "Onaylandı" : Model.Status == "Cancelled" ? "İptal Edildi" : Model.Status)</span>
                     </div>
 
                     @if (flight != null)
