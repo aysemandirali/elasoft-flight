@@ -30,16 +30,22 @@ namespace FlightBooking.Services.AccountServices
             return true;
         }
 
-        // Sistemde hic admin yoksa varsayilan bir admin hesabi olustur.
+        // Sistemde yoksa varsayilan admin ve demo musteri hesaplarini olustur.
         public async Task EnsureDefaultAdminAsync()
         {
-            const string adminEmail = "admin@elasoft.com";
-            var exists = await _users.Find(x => x.Email == adminEmail).AnyAsync();
+            await EnsureUserAsync("admin@elasoft.com", "Sistem Yöneticisi", "Admin123!", "Admin");
+            await EnsureUserAsync("demo@elasoft.com", "Demo Müşteri", "Demo123!", "Customer");
+        }
+
+        // Belirtilen e-posta yoksa verilen bilgilerle kullanici olustur.
+        private async Task EnsureUserAsync(string email, string fullName, string password, string role)
+        {
+            var exists = await _users.Find(x => x.Email == email).AnyAsync();
             if (exists) return;
 
-            var admin = new AppUser { FullName = "Sistem Yöneticisi", Email = adminEmail, Role = "Admin" };
-            admin.PasswordHash = _hasher.HashPassword(admin, "Admin123!");
-            await _users.InsertOneAsync(admin);
+            var user = new AppUser { FullName = fullName, Email = email, Role = role };
+            user.PasswordHash = _hasher.HashPassword(user, password);
+            await _users.InsertOneAsync(user);
         }
 
         // Email + sifre dogruysa kullaniciyi dondur, degilse null.

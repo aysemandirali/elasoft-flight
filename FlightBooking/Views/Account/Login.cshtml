@@ -15,6 +15,17 @@
             background:linear-gradient(135deg, rgba(15,23,42,.88), rgba(29,78,216,.72)), url('/geair/assets/img/slider/slider_bg01.jpg') center/cover no-repeat fixed;
         }
         .card { border-radius:18px; }
+        .demo-box {
+            background:#eff6ff; border:1px dashed #93c5fd; border-radius:12px; padding:12px 14px;
+        }
+        .demo-title { font-size:12px; font-weight:600; color:#1d4ed8; margin-bottom:6px; }
+        .demo-row {
+            display:flex; justify-content:space-between; align-items:center;
+            font-size:13px; color:#475569; padding:2px 0;
+        }
+        .demo-row code {
+            color:#0f172a; background:#dbeafe; padding:2px 8px; border-radius:6px; font-size:12.5px;
+        }
     </style>
 </head>
 <body>
@@ -44,7 +55,14 @@
                 <span class="text-muted">Hesabın yok mu?</span>
                 <a asp-controller="Account" asp-action="Register">Üye Ol</a>
             </div>
-            <div class="text-center mt-2">
+
+            <div class="demo-box mt-3">
+                <div class="demo-title"><i class="bi bi-person-check"></i> Demo Müşteri Hesabı</div>
+                <div class="demo-row"><span>E-posta</span><code>demo@elasoft.com</code></div>
+                <div class="demo-row"><span>Şifre</span><code>Demo123!</code></div>
+            </div>
+
+            <div class="text-center mt-3">
                 <a href="/" class="text-muted small">← Ana sayfaya dön</a>
             </div>
         </div>

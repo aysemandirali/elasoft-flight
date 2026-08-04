@@ -80,6 +80,38 @@
             border-top: 1px solid rgba(255,255,255,.08);
             padding-top: 14px;
         }
+
+        .demo-box {
+            margin-top: 20px;
+            background: rgba(30,111,217,.12);
+            border: 1px dashed rgba(59,142,245,.45);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .demo-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8Fb2ff;
+            margin-bottom: 8px;
+        }
+
+        .demo-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #B5BFCF;
+            padding: 3px 0;
+        }
+
+            .demo-row code {
+                color: #fff;
+                background: rgba(255,255,255,.08);
+                padding: 2px 8px;
+                border-radius: 6px;
+                font-size: 12.5px;
+            }
     </style>
 </head>
 <body>
@@ -107,6 +139,12 @@
                 </div>
                 <button class="btn btn-admin w-100"><i class="bi bi-box-arrow-in-right"></i> Panele Giriş Yap</button>
             </form>
+
+            <div class="demo-box">
+                <div class="demo-title"><i class="bi bi-person-badge"></i> Demo Yönetici Hesabı</div>
+                <div class="demo-row"><span>E-posta</span><code>admin@elasoft.com</code></div>
+                <div class="demo-row"><span>Şifre</span><code>Admin123!</code></div>
+            </div>
 
             <div class="staff-note text-center mt-4">
                 <i class="bi bi-info-circle"></i> Bu ekran yalnızca yetkili personel içindir.
