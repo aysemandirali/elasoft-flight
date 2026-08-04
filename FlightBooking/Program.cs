@@ -37,6 +37,7 @@ builder.Services.AddScoped<ICheckInService, CheckInService>();
 
 // Uyelik/giris servisi + cerez tabanli kimlik dogrulama
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<FlightBooking.Services.CarRentalServices.ICarRentalService, FlightBooking.Services.CarRentalServices.CarRentalService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -98,6 +99,10 @@ using (var scope = app.Services.CreateScope())
 {
     var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
     await authService.EnsureDefaultAdminAsync();
+
+    // Araç kiralama filosunu (örnek veriler) ilk açılışta yükle
+    var carService = scope.ServiceProvider.GetRequiredService<FlightBooking.Services.CarRentalServices.ICarRentalService>();
+    await carService.SeedAsync();
 }
 
 // Configure the HTTP request pipeline.

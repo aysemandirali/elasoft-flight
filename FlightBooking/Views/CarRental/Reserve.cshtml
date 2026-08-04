@@ -1,0 +1,103 @@
+@model FlightBooking.Entities.Car
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Araç Rezervasyonu";
+    ViewBag.PageTitle = "Araç Rezervasyonu";
+    ViewBag.PageSubtitle = $"{Model.Brand} {Model.Model} · {Model.Category}";
+    var pickup = ViewBag.PickupDate as string;
+    var dropoff = ViewBag.DropoffDate as string;
+    var days = (int)ViewBag.Days;
+    var total = (decimal)ViewBag.Total;
+    var tr = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="row g-4">
+
+            <!-- Araç özeti -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm">
+                    <div style="background:linear-gradient(120deg,#1d4ed8,#0ea5e9); color:#fff; padding:26px; text-align:center;">
+                        <i class="bi @Model.Icon" style="font-size:56px;"></i>
+                        <h4 class="mt-2 mb-0">@Model.Brand @Model.Model</h4>
+                        <span class="small">@Model.Category</span>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled m-0">
+                            <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-geo-alt"></i> Teslim Yeri</span><strong>@Model.Location</strong></li>
+                            <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-people"></i> Koltuk</span><strong>@Model.Seats</strong></li>
+                            <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-gear"></i> Vites</span><strong>@Model.Transmission</strong></li>
+                            <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-fuel-pump"></i> Yakıt</span><strong>@Model.Fuel</strong></li>
+                            <li class="d-flex justify-content-between py-2"><span class="text-muted"><i class="bi bi-cash"></i> Günlük</span><strong>@Model.DailyPrice.ToString("#,##0", tr) ₺</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rezervasyon formu -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Kiralama Bilgileri</h5>
+                        <form method="post" action="/CarRental/ReserveComplete">
+                            <input type="hidden" name="carId" value="@Model.Id" />
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Alış Tarihi</label>
+                                    <input type="date" name="pickupDate" id="pickup" value="@pickup" class="form-control" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">İade Tarihi</label>
+                                    <input type="date" name="dropoffDate" id="dropoff" value="@dropoff" class="form-control" required />
+                                </div>
+                            </div>
+
+                            <hr class="my-4" />
+                            <h6 class="mb-3">Sürücü Bilgileri</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Ad Soyad</label>
+                                    <input name="customerName" class="form-control" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Telefon</label>
+                                    <input name="customerPhone" class="form-control" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">E-posta</label>
+                                    <input type="email" name="customerEmail" class="form-control" required />
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4 p-3 rounded" style="background:#eff6ff;">
+                                <div>
+                                    <div class="text-muted small"><span id="dayCount">@days</span> gün × @Model.DailyPrice.ToString("#,##0", tr) ₺</div>
+                                    <div class="fs-3 fw-bold text-primary"><span id="totalPrice">@total.ToString("#,##0", tr)</span> ₺</div>
+                                </div>
+                                <button class="btn btn-lg" style="background:#16a34a; color:#fff;"><i class="bi bi-check-circle"></i> Rezervasyonu Tamamla</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var daily = @Model.DailyPrice.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        function recalc() {
+            var p = new Date(document.getElementById('pickup').value);
+            var d = new Date(document.getElementById('dropoff').value);
+            var days = Math.max(1, Math.round((d - p) / 86400000));
+            if (isNaN(days)) days = 1;
+            document.getElementById('dayCount').textContent = days;
+            document.getElementById('totalPrice').textContent = (days * daily).toLocaleString('tr-TR');
+        }
+        document.getElementById('pickup').addEventListener('change', recalc);
+        document.getElementById('dropoff').addEventListener('change', recalc);
+    </script>
+}

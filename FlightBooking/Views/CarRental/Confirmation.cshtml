@@ -1,0 +1,37 @@
+@model FlightBooking.Entities.CarReservation
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Rezervasyon Onayı";
+    ViewBag.PageTitle = "Rezervasyon Onayı";
+    ViewBag.PageSubtitle = "Araç kiralama rezervasyonunuz oluşturuldu";
+    var tr = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm text-center p-5">
+            <div><i class="bi bi-check-circle-fill text-success" style="font-size:64px;"></i></div>
+            <h3 class="mt-3">Rezervasyonunuz Alındı!</h3>
+            <p class="text-muted">Rezervasyon kodunuzu saklayın.</p>
+            <div class="my-3">
+                <span class="badge bg-dark" style="font-size:1.5rem; letter-spacing:3px;">@Model.ReservationCode</span>
+            </div>
+
+            <div class="text-start mx-auto" style="max-width:420px;">
+                <ul class="list-unstyled">
+                    <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Araç</span><strong>@Model.CarName</strong></li>
+                    <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Teslim Yeri</span><strong>@Model.PickupLocation</strong></li>
+                    <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Alış</span><strong>@Model.PickupDate.ToString("dd.MM.yyyy")</strong></li>
+                    <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">İade</span><strong>@Model.DropoffDate.ToString("dd.MM.yyyy")</strong></li>
+                    <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Süre</span><strong>@Model.Days gün</strong></li>
+                    <li class="d-flex justify-content-between py-2"><span class="text-muted">Toplam</span><strong class="text-primary fs-5">@Model.TotalPrice.ToString("#,##0", tr) ₺</strong></li>
+                </ul>
+            </div>
+
+            <div class="d-grid gap-2 mt-3 mx-auto" style="max-width:420px;">
+                <a href="/CarRental/Index" class="btn btn-primary" style="background:#1d4ed8;">Yeni Araç Ara</a>
+                <a href="/" class="btn btn-outline-secondary">Ana Sayfa</a>
+            </div>
+        </div>
+    </div>
+</div>
