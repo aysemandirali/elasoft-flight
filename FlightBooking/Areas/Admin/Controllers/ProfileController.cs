@@ -36,7 +36,8 @@ namespace FlightBooking.Areas.Admin.Controllers
             var bookings = await _bookingService.GetAllBookingsAsync();
             ViewBag.FlightCount = flights.Count;
             ViewBag.BookingCount = bookings.Count;
-            ViewBag.Revenue = bookings.Sum(b => b.TotalPrice);
+            ViewBag.Revenue = bookings.Sum(b => b.TotalPrice)
+                .ToString("#,##0", new System.Globalization.CultureInfo("tr-TR"));
 
             return View();
         }

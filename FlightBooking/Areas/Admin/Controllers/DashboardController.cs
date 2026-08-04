@@ -33,7 +33,8 @@ namespace FlightBooking.Areas.Admin.Controllers
             ViewBag.PassengerTotal = bookings.Sum(b => b.PassengerCount);
             ViewBag.Scheduled = flights.Count(f => f.Status == "Scheduled");
             ViewBag.Delayed = flights.Count(f => f.Status == "Delayed");
-            ViewBag.Revenue = bookings.Sum(b => b.TotalPrice);
+            ViewBag.Revenue = bookings.Sum(b => b.TotalPrice)
+                .ToString("#,##0", new System.Globalization.CultureInfo("tr-TR"));
 
             return View();
         }
