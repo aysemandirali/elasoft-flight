@@ -75,6 +75,40 @@ namespace FlightBooking.Controllers
             return RedirectToAction("Profile");
         }
 
+        // ── Yönetim paneli girişi (müşteri girişinden ayrı) ─────────────────
+        // Üye ol / kayıt yok; sadece Admin rolündeki kullanıcılar geçebilir.
+        [HttpGet]
+        public IActionResult AdminLogin() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> AdminLogin(string email, string password)
+        {
+            var user = await _authService.ValidateLoginAsync(email, password);
+            if (user == null)
+            {
+                ViewBag.Error = "E-posta veya şifre hatalı.";
+                return View();
+            }
+
+            // Müşteri hesabıyla yönetim paneline giriş engellenir
+            if (user.Role != "Admin")
+            {
+                ViewBag.Error = "Bu ekran yalnızca yöneticiler içindir.";
+                return View();
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+
+            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+        }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

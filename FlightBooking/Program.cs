@@ -42,6 +42,25 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/Login";
+
+        // Admin alanina girissiz/yetkisiz erisim -> musteri ekrani yerine
+        // yonetim giris ekranina yonlendir. Diger her yerde musteri girisi kalir.
+        options.Events.OnRedirectToLogin = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/Admin"))
+                context.Response.Redirect("/Account/AdminLogin");
+            else
+                context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/Admin"))
+                context.Response.Redirect("/Account/AdminLogin");
+            else
+                context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
     });
 
 // No-Show / Overbooking servisi
