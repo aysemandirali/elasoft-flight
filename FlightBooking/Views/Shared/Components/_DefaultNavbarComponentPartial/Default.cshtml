@@ -54,13 +54,34 @@
                                     <a href="#">?</a>
                                 </li>
 
-                                <li class="header-btn">
-                                    <a href="/Account/Register" class="btn">Üye Ol</a>
-                                </li>
-
-                                <li class="header-btn sign-in">
-                                    <a href="/Account/Login" class="btn">Giriş Yap</a>
-                                </li>
+                                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                                {
+                                    var displayName = (User.Identity.Name ?? "Hesabım").Split(' ')[0];
+                                    if (User.IsInRole("Admin"))
+                                    {
+                                        <li class="header-btn">
+                                            <a href="/Admin/Dashboard/Index" class="btn"><i class="fa-solid fa-gauge"></i> Yönetim Paneli</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="header-btn">
+                                            <a href="/Account/Profile" class="btn"><i class="fa-solid fa-user"></i> @displayName</a>
+                                        </li>
+                                    }
+                                    <li class="header-btn sign-in">
+                                        <a href="/Account/Logout" class="btn"><i class="fa-solid fa-right-from-bracket"></i> Çıkış</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="header-btn">
+                                        <a href="/Account/Register" class="btn">Üye Ol</a>
+                                    </li>
+                                    <li class="header-btn sign-in">
+                                        <a href="/Account/Login" class="btn">Giriş Yap</a>
+                                    </li>
+                                }
 
                             </ul>
                         </div>
