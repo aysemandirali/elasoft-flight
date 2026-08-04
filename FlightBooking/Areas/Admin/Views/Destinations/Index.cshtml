@@ -1,0 +1,142 @@
+@model List<FlightBooking.Dtos.DestinationDtos.DestinationSummaryDto>
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Destinasyonlar";
+}
+
+<div class="main-content" id="main-content">
+
+    <div class="page-header">
+        <div>
+            <div class="page-breadcrumb">
+                <i class="bi bi-house"></i> <span>Ağ</span> <span class="sep">›</span> <span>Destinasyonlar</span>
+            </div>
+            <h1 class="page-title">Destinasyonlar</h1>
+            <p class="page-desc">Uçuş yapılan varış noktaları ve yoğunlukları.</p>
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="table-card">
+            <div style="padding:48px; text-align:center; color:var(--gray-500);">
+                <i class="bi bi-geo-alt" style="font-size:40px; opacity:.4;"></i>
+                <p style="margin-top:12px;">Henüz uçuş tanımlı değil, bu yüzden destinasyon listesi boş.</p>
+                <a href="/Admin/Flights/CreateFlight" class="btn-add" style="margin-top:8px;"><i class="bi bi-plus-lg"></i> Uçuş Ekle</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="dest-grid">
+            @foreach (var d in Model)
+            {
+                <div class="dest-card">
+                    <div class="dest-top">
+                        <div class="dest-code">@d.Code</div>
+                        <div class="dest-badge"><i class="bi bi-airplane"></i> @d.FlightCount uçuş</div>
+                    </div>
+                    <div class="dest-name">@d.Name</div>
+                    <div class="dest-meta"><i class="bi bi-people"></i> @d.PassengerCount yolcu</div>
+                    <div class="dest-routes">
+                        <span class="dest-routes-label">Kalkış noktaları:</span>
+                        @foreach (var r in d.Routes)
+                        {
+                            <span class="route-chip">@r</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+@section Styles {
+    <style>
+        .dest-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .dest-card {
+            background: var(--white);
+            border: 1px solid var(--gray-100);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 20px 22px;
+            transition: box-shadow var(--transition), transform var(--transition);
+        }
+
+            .dest-card:hover {
+                box-shadow: var(--shadow-md);
+                transform: translateY(-2px);
+            }
+
+        .dest-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .dest-code {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: 1px;
+        }
+
+        .dest-badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            background: rgba(30,111,217,.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .dest-name {
+            font-size: 14px;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        .dest-meta {
+            font-size: 12.5px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        .dest-routes {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-100);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dest-routes-label {
+            font-size: 11.5px;
+            color: var(--gray-500);
+            margin-right: 2px;
+        }
+
+        .route-chip {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--gray-700);
+            background: var(--gray-50);
+            border: 1px solid var(--gray-100);
+            padding: 2px 9px;
+            border-radius: 6px;
+        }
+
+        @@media (max-width: 991px) { .dest-grid { grid-template-columns: repeat(2, 1fr); } }
+        @@media (max-width: 560px) { .dest-grid { grid-template-columns: 1fr; } }
+    </style>
+}

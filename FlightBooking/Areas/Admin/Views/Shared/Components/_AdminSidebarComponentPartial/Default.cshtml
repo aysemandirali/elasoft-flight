@@ -1,7 +1,7 @@
 ﻿<aside class="sidebar" id="sidebar">
 
     <!-- Brand -->
-    <a href="#" class="sidebar-brand" onclick="return false;">
+    <a href="/Admin/Dashboard/Index" class="sidebar-brand">
         <div class="brand-icon"><i class="bi bi-airplane-fill"></i></div>
         <div class="brand-text">
             <span class="brand-name">SkyAdmin</span>
@@ -24,30 +24,16 @@
 
         <!-- Flights -->
         <div class="nav-item-wrap">
-            <div class="nav-link-item active" id="flights-toggle" onclick="toggleSub(this,'flights-sub')">
+            <a class="nav-link-item" href="/Admin/Flights/FlightList">
                 <i class="bi bi-airplane icon"></i>
                 <span class="label">Uçuşlar</span>
-                <i class="bi bi-chevron-down chevron open ms-auto" id="flights-chev"></i>
-            </div>
-            <div class="sub-menu open" id="flights-sub">
-                <a class="sub-menu-link active" href="/Admin/Flights/FlightList"><i class="bi bi-dot"></i>Uçuş Yönetimi</a>
-                <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Tarifeler</a>
-                <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Uçuş Durumları</a>
-            </div>
-        </div>
-
-        <div class="nav-item-wrap">
-            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
-                <i class="bi bi-geo-alt-fill icon"></i>
-                <span class="label">Destinasyonlar</span>
             </a>
         </div>
 
         <div class="nav-item-wrap">
-            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
-                <i class="bi bi-boxes icon"></i>
-                <span class="label">Uçak Filosu</span>
-                <span class="nav-badge">12</span>
+            <a class="nav-link-item" href="/Admin/Destinations/Index">
+                <i class="bi bi-geo-alt-fill icon"></i>
+                <span class="label">Destinasyonlar</span>
             </a>
         </div>
 
@@ -69,15 +55,10 @@
         </div>
 
         <div class="nav-item-wrap">
-            <div class="nav-link-item" onclick="toggleSub(this,'checkin-sub')">
+            <a class="nav-link-item" href="/Admin/CheckIn/Index">
                 <i class="bi bi-check2-square icon"></i>
-                <span class="label">Check-In Yönetimi</span>
-                <i class="bi bi-chevron-down chevron ms-auto"></i>
-            </div>
-            <div class="sub-menu" id="checkin-sub">
-                <a class="sub-menu-link" href="/Admin/CheckIn/Index"><i class="bi bi-dot"></i>Online Check-In</a>
-                <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Kiosk Yönetimi</a>
-            </div>
+                <span class="label">Check-In</span>
+            </a>
         </div>
 
         <!-- Analytics -->
@@ -108,16 +89,6 @@
             <a class="nav-link-item" href="/Admin/OverbookingForecast/Index">
                 <i class="bi bi-clipboard-data icon"></i>
                 <span class="label">Overbooking Tahmin Paneli</span>
-            </a>
-        </div>
-
-        <!-- System -->
-        <div class="nav-label">SİSTEM</div>
-
-        <div class="nav-item-wrap">
-            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
-                <i class="bi bi-gear-fill icon"></i>
-                <span class="label">Ayarlar</span>
             </a>
         </div>
 
