@@ -1,0 +1,125 @@
+@model List<FlightBooking.Dtos.PassengerDtos.AdminPassengerListDto>
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Yolcular";
+}
+
+<div class="main-content" id="main-content">
+
+    <div class="page-header">
+        <div>
+            <div class="page-breadcrumb">
+                <i class="bi bi-house"></i> <span>Operasyonlar</span> <span class="sep">›</span> <span>Yolcular</span>
+            </div>
+            <h1 class="page-title">Yolcular</h1>
+            <p class="page-desc">Tüm rezervasyonlardaki yolcuların birleşik listesi.</p>
+        </div>
+    </div>
+
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="bi bi-people-fill"></i></div>
+            <div>
+                <div class="stat-value">@ViewBag.Total</div>
+                <div class="stat-label">Toplam Yolcu</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="bi bi-check2-square"></i></div>
+            <div>
+                <div class="stat-value">@ViewBag.CheckedIn</div>
+                <div class="stat-label">Check-in Yapan</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="bi bi-hourglass-split"></i></div>
+            <div>
+                <div class="stat-value">@((int)ViewBag.Total - (int)ViewBag.CheckedIn)</div>
+                <div class="stat-label">Bekleyen</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="tbl-search">
+                <i class="bi bi-search si"></i>
+                <input type="text" id="passengerSearch" placeholder="Ad, PNR, uçuş veya e-posta ara..." onkeyup="filterPassengers()" />
+            </div>
+            <span class="tbl-count" id="tblCount">@(Model?.Count ?? 0) yolcu</span>
+        </div>
+
+        @if (Model == null || Model.Count == 0)
+        {
+            <div style="padding:48px; text-align:center; color:var(--gray-500);">
+                <i class="bi bi-people" style="font-size:40px; opacity:.4;"></i>
+                <p style="margin-top:12px;">Henüz yolcu kaydı yok. Rezervasyon oluşturuldukça burada listelenir.</p>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x:auto;">
+                <table class="flights-table" id="passengerTable">
+                    <thead>
+                        <tr>
+                            <th>Yolcu</th>
+                            <th>Tip</th>
+                            <th>Cinsiyet</th>
+                            <th>PNR</th>
+                            <th>Uçuş</th>
+                            <th>Rota</th>
+                            <th>Koltuk</th>
+                            <th>Durum</th>
+                            <th>Tarih</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="flight-no"><span class="flight-no-dot"></span>@p.FullName</div>
+                                    <div style="font-size:12px; color:var(--gray-500); padding-left:14px;">@p.ContactEmail</div>
+                                </td>
+                                <td>@p.PassengerType</td>
+                                <td>@(string.IsNullOrEmpty(p.Gender) ? "-" : p.Gender)</td>
+                                <td><strong style="font-family:'Syne',sans-serif; color:var(--navy);">@p.PnrNumber</strong></td>
+                                <td>@p.FlightNumber</td>
+                                <td>@p.Route</td>
+                                <td>@(string.IsNullOrEmpty(p.SeatNumber) ? "—" : p.SeatNumber)</td>
+                                <td>
+                                    @if (p.IsCheckedIn)
+                                    {
+                                        <span class="status-badge status-boarding"><span class="dot"></span>Check-in yapıldı</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-delayed"><span class="dot"></span>Bekliyor</span>
+                                    }
+                                </td>
+                                <td class="time-cell">@p.BookingDate.ToString("dd.MM.yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        function filterPassengers() {
+            var q = document.getElementById('passengerSearch').value.toLowerCase();
+            var rows = document.querySelectorAll('#passengerTable tbody tr');
+            var shown = 0;
+            rows.forEach(function (r) {
+                var match = r.textContent.toLowerCase().indexOf(q) > -1;
+                r.style.display = match ? '' : 'none';
+                if (match) shown++;
+            });
+            document.getElementById('tblCount').textContent = shown + ' yolcu';
+        }
+    </script>
+}
