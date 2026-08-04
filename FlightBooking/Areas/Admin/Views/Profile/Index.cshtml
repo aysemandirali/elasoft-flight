@@ -1,0 +1,113 @@
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Profilim";
+    var fullName = ViewBag.FullName as string ?? "Yönetici";
+    var initials = string.Join("", fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => char.ToUpper(w[0])));
+}
+
+<div class="main-content" id="main-content">
+
+    <div class="page-header">
+        <div>
+            <div class="page-breadcrumb">
+                <i class="bi bi-house"></i> <span>Hesap</span> <span class="sep">›</span> <span>Profilim</span>
+            </div>
+            <h1 class="page-title">Profilim</h1>
+            <p class="page-desc">Hesap bilgilerin ve sistemdeki özet etkin.</p>
+        </div>
+        <a href="/Admin/Settings/Index" class="btn-add"><i class="bi bi-gear"></i> Ayarlar</a>
+    </div>
+
+    <div class="prof-grid">
+        <!-- Kimlik kartı -->
+        <div class="table-card" style="padding:28px; text-align:center;">
+            <div class="prof-avatar">@initials</div>
+            <h3 style="font-family:'Syne',sans-serif; color:var(--navy); margin:14px 0 2px;">@fullName</h3>
+            <span class="prof-role"><i class="bi bi-shield-check"></i> @ViewBag.Role</span>
+
+            <div class="prof-info">
+                <div class="prof-info-row">
+                    <span><i class="bi bi-envelope"></i> E-posta</span>
+                    <strong>@ViewBag.Email</strong>
+                </div>
+                <div class="prof-info-row">
+                    <span><i class="bi bi-person-badge"></i> Rol</span>
+                    <strong>@ViewBag.Role</strong>
+                </div>
+                <div class="prof-info-row">
+                    <span><i class="bi bi-clock-history"></i> Oturum</span>
+                    <strong>Aktif</strong>
+                </div>
+            </div>
+
+            <a href="/Account/Logout" class="prof-logout"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</a>
+        </div>
+
+        <!-- Etki özeti -->
+        <div>
+            <div class="stats-row" style="grid-template-columns:repeat(3,1fr); margin-bottom:16px;">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="bi bi-airplane-fill"></i></div>
+                    <div><div class="stat-value">@ViewBag.FlightCount</div><div class="stat-label">Yönetilen Uçuş</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="bi bi-ticket-detailed-fill"></i></div>
+                    <div><div class="stat-value">@ViewBag.BookingCount</div><div class="stat-label">Rezervasyon</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="bi bi-cash-stack"></i></div>
+                    <div><div class="stat-value">@ViewBag.Revenue ₺</div><div class="stat-label">Toplam Gelir</div></div>
+                </div>
+            </div>
+
+            <div class="table-card" style="padding:24px;">
+                <h2 style="font-family:'Syne',sans-serif; font-size:16px; color:var(--navy); margin:0 0 14px;">Hızlı İşlemler</h2>
+                <div class="prof-actions">
+                    <a href="/Admin/Flights/CreateFlight"><i class="bi bi-plus-circle"></i> Yeni Uçuş Ekle</a>
+                    <a href="/Admin/Booking/BookingList"><i class="bi bi-journals"></i> Rezervasyonlar</a>
+                    <a href="/Admin/Passengers/Index"><i class="bi bi-people"></i> Yolcular</a>
+                    <a href="/Admin/Settings/Index"><i class="bi bi-gear"></i> Ayarlar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Styles {
+    <style>
+        .prof-grid { display: grid; grid-template-columns: 340px 1fr; gap: 16px; align-items: start; }
+        .prof-avatar {
+            width: 88px; height: 88px; border-radius: 22px; margin: 0 auto;
+            background: linear-gradient(135deg, var(--accent), #0D4FA8);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne',sans-serif; font-size: 32px; font-weight: 800; color: #fff;
+            box-shadow: 0 10px 26px rgba(30,111,217,.4);
+        }
+        .prof-role {
+            display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600;
+            color: var(--accent); background: rgba(30,111,217,.1); padding: 4px 12px; border-radius: 20px;
+        }
+        .prof-info { text-align: left; margin-top: 20px; }
+        .prof-info-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid var(--gray-100); font-size: 13.5px;
+        }
+        .prof-info-row span { color: var(--gray-500); }
+        .prof-info-row strong { color: var(--navy); }
+        .prof-logout {
+            display: inline-flex; align-items: center; gap: 8px; margin-top: 20px;
+            padding: 9px 20px; border-radius: 9px; text-decoration: none; font-weight: 600; font-size: 13.5px;
+            color: #DC2626; background: rgba(239,68,68,.08); transition: background .2s;
+        }
+        .prof-logout:hover { background: rgba(239,68,68,.16); }
+        .prof-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .prof-actions a {
+            display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-radius: 10px;
+            border: 1px solid var(--gray-100); background: var(--white); text-decoration: none;
+            color: var(--gray-700); font-size: 13.5px; font-weight: 500; transition: all .2s;
+        }
+        .prof-actions a:hover { border-color: var(--accent); color: var(--accent); background: var(--sky); }
+        @@media (max-width: 860px) { .prof-grid { grid-template-columns: 1fr; } }
+    </style>
+}

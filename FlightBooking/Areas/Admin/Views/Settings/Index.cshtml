@@ -1,0 +1,87 @@
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Ayarlar";
+}
+
+<div class="main-content" id="main-content">
+
+    <div class="page-header">
+        <div>
+            <div class="page-breadcrumb">
+                <i class="bi bi-house"></i> <span>Hesap</span> <span class="sep">›</span> <span>Ayarlar</span>
+            </div>
+            <h1 class="page-title">Ayarlar</h1>
+            <p class="page-desc">Hesap güvenliği ve sistem bilgileri.</p>
+        </div>
+    </div>
+
+    @if (TempData["PwSuccess"] != null)
+    {
+        <div class="set-alert ok"><i class="bi bi-check-circle-fill"></i> @TempData["PwSuccess"]</div>
+    }
+    @if (TempData["PwError"] != null)
+    {
+        <div class="set-alert err"><i class="bi bi-exclamation-triangle-fill"></i> @TempData["PwError"]</div>
+    }
+
+    <div class="set-grid">
+        <!-- Şifre değiştir -->
+        <div class="table-card" style="padding:26px;">
+            <h2 class="set-title"><i class="bi bi-shield-lock"></i> Şifre Değiştir</h2>
+            <p class="set-desc">Hesabının şifresini güncelle. En az 6 karakter olmalı.</p>
+
+            <form method="post" action="/Admin/Settings/ChangePassword">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label class="form-label">Mevcut Şifre</label>
+                    <input name="currentPassword" type="password" class="form-control-custom" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Yeni Şifre</label>
+                    <input name="newPassword" type="password" class="form-control-custom" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Yeni Şifre (Tekrar)</label>
+                    <input name="newPasswordRepeat" type="password" class="form-control-custom" required />
+                </div>
+                <button class="btn-save"><i class="bi bi-check-lg"></i> Şifreyi Güncelle</button>
+            </form>
+        </div>
+
+        <!-- Sistem bilgileri -->
+        <div class="table-card" style="padding:26px;">
+            <h2 class="set-title"><i class="bi bi-info-circle"></i> Sistem Bilgileri</h2>
+            <p class="set-desc">Uygulama ve oturum bilgileri.</p>
+
+            <div class="set-info-row"><span>Uygulama</span><strong>ElaSoft Flight</strong></div>
+            <div class="set-info-row"><span>Panel</span><strong>SkyAdmin</strong></div>
+            <div class="set-info-row"><span>Giriş yapan</span><strong>@ViewBag.FullName</strong></div>
+            <div class="set-info-row"><span>E-posta</span><strong>@ViewBag.Email</strong></div>
+            <div class="set-info-row"><span>Ortam</span><strong>@(System.Diagnostics.Debugger.IsAttached ? "Geliştirme" : "Üretim")</strong></div>
+            <div class="set-info-row"><span>Sunucu saati</span><strong>@DateTime.Now.ToString("dd.MM.yyyy HH:mm")</strong></div>
+        </div>
+    </div>
+
+</div>
+
+@section Styles {
+    <style>
+        .set-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+        .set-title { font-family: 'Syne',sans-serif; font-size: 16px; color: var(--navy); margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+        .set-desc { font-size: 13px; color: var(--gray-500); margin-bottom: 18px; }
+        .set-info-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid var(--gray-100); font-size: 13.5px;
+        }
+        .set-info-row:last-child { border-bottom: none; }
+        .set-info-row span { color: var(--gray-500); }
+        .set-info-row strong { color: var(--navy); }
+        .set-alert {
+            display: flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 10px;
+            font-size: 13.5px; font-weight: 500; margin-bottom: 16px;
+        }
+        .set-alert.ok { background: rgba(16,185,129,.12); color: #059669; }
+        .set-alert.err { background: rgba(239,68,68,.1); color: #DC2626; }
+        @@media (max-width: 860px) { .set-grid { grid-template-columns: 1fr; } }
+    </style>
+}

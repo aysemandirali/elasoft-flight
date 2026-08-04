@@ -52,5 +52,28 @@ namespace FlightBooking.Services.AccountServices
             var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, password);
             return result == PasswordVerificationResult.Failed ? null : user;
         }
+
+        // Email ile kullaniciyi getir (profil sayfasi icin).
+        public async Task<AppUser?> GetByEmailAsync(string email)
+        {
+            email = email.Trim().ToLower();
+            return await _users.Find(x => x.Email == email).FirstOrDefaultAsync();
+        }
+
+        // Mevcut sifre dogruysa yeni sifreyi hashleyip kaydet.
+        public async Task<bool> ChangePasswordAsync(string email, string currentPassword, string newPassword)
+        {
+            email = email.Trim().ToLower();
+            var user = await _users.Find(x => x.Email == email).FirstOrDefaultAsync();
+            if (user == null) return false;
+
+            var check = _hasher.VerifyHashedPassword(user, user.PasswordHash, currentPassword);
+            if (check == PasswordVerificationResult.Failed) return false;
+
+            var newHash = _hasher.HashPassword(user, newPassword);
+            var update = Builders<AppUser>.Update.Set(x => x.PasswordHash, newHash);
+            await _users.UpdateOneAsync(x => x.Id == user.Id, update);
+            return true;
+        }
     }
 }
