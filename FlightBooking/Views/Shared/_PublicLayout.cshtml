@@ -1,0 +1,49 @@
+﻿@{
+    Layout = null;
+    var pageTitle = ViewBag.PageTitle as string ?? ViewData["Title"] as string ?? "Geair";
+    var pageSubtitle = ViewBag.PageSubtitle as string;
+}
+<!doctype html>
+<html class="no-js" lang="tr">
+
+@await Component.InvokeAsync("_DefaultHeadComponentPartial")
+
+<body>
+
+    @await Component.InvokeAsync("_DefaultHeaderComponentPartial")
+
+    <main>
+        <!-- Sayfa başlığı (breadcrumb) -->
+        <section class="breadcrumb-area" style="background:linear-gradient(120deg,#1d4ed8,#0ea5e9); padding:70px 0 55px;">
+            <div class="container">
+                <div class="breadcrumb-content text-center" style="color:#fff;">
+                    <h2 class="title" style="color:#fff; font-weight:700;">@pageTitle</h2>
+                    @if (!string.IsNullOrEmpty(pageSubtitle))
+                    {
+                        <p class="mb-0" style="opacity:.85;">@pageSubtitle</p>
+                    }
+                    <nav class="mt-2" style="font-size:14px; opacity:.9;">
+                        <a href="/" style="color:#fff;">Ana Sayfa</a> <span class="mx-1">/</span> <span>@pageTitle</span>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sayfa içeriği -->
+        <section style="padding:55px 0; background:#f4f7fb;">
+            <div class="container">
+                @RenderBody()
+            </div>
+        </section>
+    </main>
+
+    @await Component.InvokeAsync("_DefaultFooterComponentPartial")
+
+    <!-- geair JS -->
+    <script src="/geair/assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/geair/assets/js/bootstrap.min.js"></script>
+    <script src="/geair/assets/js/main.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

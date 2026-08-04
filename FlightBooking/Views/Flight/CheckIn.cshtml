@@ -1,30 +1,18 @@
 ﻿@model FlightBooking.Entities.Booking
 @{
-    Layout = null;
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Online Check-in";
+    ViewBag.PageTitle = "Online Check-in";
+    ViewBag.PageSubtitle = "PNR ve soyadınızla check-in yapın, koltuk ve ek hizmetlerinizi seçin";
     var searched = (bool)(ViewBag.Searched ?? false);
     var pnr = ViewBag.Pnr as string;
     var surname = ViewBag.Surname as string;
 }
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Online Check-in</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <style> body { background:#f1f5f9; } .hero { background:linear-gradient(120deg,#1d4ed8,#0ea5e9); color:#fff; padding:48px 0; } </style>
-</head>
-<body>
-    <div class="hero">
-        <div class="container">
-            <h2 class="mb-1"><i class="bi bi-ticket-perforated"></i> Online Check-in</h2>
-            <p class="mb-0 opacity-75">PNR ve soyadınızla check-in yapın, koltuğunuzu ve ek hizmetlerinizi seçin.</p>
-        </div>
-    </div>
 
-    <div class="container py-4" style="max-width:900px;">
-        <form method="get" action="/Flight/CheckIn" class="card shadow-sm p-4 mb-4 border-0">
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+
+        <form method="get" action="/Flight/CheckIn" class="card border-0 shadow-sm p-4 mb-4">
             <div class="row g-3 align-items-end">
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">Rezervasyon Kodu (PNR)</label>
@@ -35,7 +23,7 @@
                     <input name="surname" value="@surname" class="form-control form-control-lg" placeholder="Soyadınız" />
                 </div>
                 <div class="col-md-3">
-                    <button class="btn btn-primary btn-lg w-100"><i class="bi bi-search"></i> Sorgula</button>
+                    <button class="btn btn-lg w-100" style="background:#1d4ed8; color:#fff;"><i class="bi bi-search"></i> Sorgula</button>
                 </div>
             </div>
         </form>
@@ -47,7 +35,7 @@
 
         @if (Model != null)
         {
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
                     <h6 class="text-muted">Rezervasyon <span class="badge bg-dark">@Model.PnrNumber</span></h6>
                     <table class="table align-middle mt-2">
@@ -75,7 +63,7 @@
                 var p = Model.Passengers[i];
                 if (!p.IsCheckedIn)
                 {
-                    <div class="card shadow-sm border-0 mb-3">
+                    <div class="card border-0 shadow-sm mb-3">
                         <div class="card-header bg-white"><strong><i class="bi bi-person-check"></i> @p.Name @p.Surname</strong> için check-in</div>
                         <div class="card-body">
                             <form method="post" action="/Flight/CheckInComplete" class="checkin-form">
@@ -114,7 +102,7 @@
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <div>Ek Hizmet Toplamı: <strong class="js-total text-primary">0 ₺</strong></div>
-                                    <button class="btn btn-success"><i class="bi bi-check-circle"></i> Check-in'i Tamamla</button>
+                                    <button class="btn" style="background:#16a34a; color:#fff;"><i class="bi bi-check-circle"></i> Check-in'i Tamamla</button>
                                 </div>
                             </form>
                         </div>
@@ -123,9 +111,10 @@
             }
         }
 
-        <a href="/" class="btn btn-outline-secondary">← Ana sayfa</a>
     </div>
+</div>
 
+@section Scripts {
     <script>
         function hesapla(form) {
             let t = 0;
@@ -139,5 +128,4 @@
             f.querySelectorAll('.js-extra').forEach(function (el) { el.addEventListener('change', function () { hesapla(f); }); });
         });
     </script>
-</body>
-</html>
+}
