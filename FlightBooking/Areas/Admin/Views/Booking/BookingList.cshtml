@@ -28,6 +28,7 @@
                         <th>Tutar</th>
                         <th>Tarih</th>
                         <th>Durum</th>
+                        <th>Ödeme</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,6 +43,16 @@
                             <td>@b.TotalPrice</td>
                             <td>@b.BookingDate.ToString("dd.MM.yyyy HH:mm")</td>
                             <td><span class="badge bg-success">@b.Status</span></td>
+                            <td>
+                                @if (b.PaymentStatus == "Ödendi")
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Ödendi</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Bekliyor</span>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>

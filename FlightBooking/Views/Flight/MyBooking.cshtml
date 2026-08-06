@@ -40,7 +40,17 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="m-0">Rezervasyon <span class="badge bg-dark ms-1" style="letter-spacing:2px;">@Model.PnrNumber</span></h5>
-                        <span class="badge bg-success fs-6">@(Model.Status == "Confirmed" ? "Onaylandı" : Model.Status == "Cancelled" ? "İptal Edildi" : Model.Status)</span>
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-success fs-6">@(Model.Status == "Confirmed" ? "Onaylandı" : Model.Status == "Cancelled" ? "İptal Edildi" : Model.Status)</span>
+                            @if (Model.PaymentStatus == "Ödendi")
+                            {
+                                <span class="badge fs-6" style="background:#0f766e;"><i class="bi bi-shield-check"></i> Ödendi</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark fs-6"><i class="bi bi-clock"></i> Ödeme Bekliyor</span>
+                            }
+                        </div>
                     </div>
 
                     @if (flight != null)
@@ -88,9 +98,15 @@
                         </tbody>
                     </table>
 
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div class="fs-5">Toplam: <strong class="text-primary">@Model.TotalPrice TL</strong></div>
-                        <a href="/Flight/CheckIn?pnr=@Model.PnrNumber" class="btn" style="background:#16a34a; color:#fff;"><i class="bi bi-ticket-perforated"></i> Online Check-in</a>
+                    <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                        <div class="fs-5">Toplam: <strong class="text-primary">@Model.TotalPrice.ToString("#,##0", System.Globalization.CultureInfo.GetCultureInfo("tr-TR")) ₺</strong></div>
+                        <div class="d-flex gap-2">
+                            @if (Model.PaymentStatus != "Ödendi")
+                            {
+                                <a href="/Flight/Payment?pnr=@Model.PnrNumber" class="btn" style="background:#1d4ed8; color:#fff;"><i class="bi bi-credit-card"></i> Şimdi Öde</a>
+                            }
+                            <a href="/Flight/CheckIn?pnr=@Model.PnrNumber" class="btn" style="background:#16a34a; color:#fff;"><i class="bi bi-ticket-perforated"></i> Online Check-in</a>
+                        </div>
                     </div>
                 </div>
             </div>
