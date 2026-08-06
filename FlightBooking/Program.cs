@@ -38,6 +38,8 @@ builder.Services.AddScoped<ICheckInService, CheckInService>();
 // Uyelik/giris servisi + cerez tabanli kimlik dogrulama
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<FlightBooking.Services.CarRentalServices.ICarRentalService, FlightBooking.Services.CarRentalServices.CarRentalService>();
+builder.Services.AddScoped<FlightBooking.Services.TourServices.ITourService, FlightBooking.Services.TourServices.TourService>();
+builder.Services.AddScoped<FlightBooking.Services.TransferServices.ITransferService, FlightBooking.Services.TransferServices.TransferService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -103,6 +105,12 @@ using (var scope = app.Services.CreateScope())
     // Araç kiralama filosunu (örnek veriler) ilk açılışta yükle
     var carService = scope.ServiceProvider.GetRequiredService<FlightBooking.Services.CarRentalServices.ICarRentalService>();
     await carService.SeedAsync();
+
+    // Tur ve transfer örnek verilerini de yükle
+    var tourService = scope.ServiceProvider.GetRequiredService<FlightBooking.Services.TourServices.ITourService>();
+    await tourService.SeedAsync();
+    var transferService = scope.ServiceProvider.GetRequiredService<FlightBooking.Services.TransferServices.ITransferService>();
+    await transferService.SeedAsync();
 }
 
 // Configure the HTTP request pipeline.
