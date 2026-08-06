@@ -1,0 +1,92 @@
+@model FlightBooking.Entities.Tour
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Tur Rezervasyonu";
+    ViewBag.PageTitle = "Tur Rezervasyonu";
+    ViewBag.PageSubtitle = Model.Title;
+    var tr = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+    var minDate = DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="row g-4">
+
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm">
+                    <div style="background:linear-gradient(120deg,#7c3aed,#2563eb); color:#fff; padding:26px; text-align:center;">
+                        <i class="bi @Model.Icon" style="font-size:52px;"></i>
+                        <h4 class="mt-2 mb-0">@Model.Title</h4>
+                        <span class="small">@Model.Category</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-secondary small">@Model.Description</p>
+                        <ul class="list-unstyled m-0">
+                            <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-geo-alt"></i> Şehir</span><strong>@Model.City</strong></li>
+                            <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-clock"></i> Süre</span><strong>@Model.Duration</strong></li>
+                            <li class="d-flex justify-content-between py-2"><span class="text-muted"><i class="bi bi-cash"></i> Kişi başı</span><strong>@Model.PricePerPerson.ToString("#,##0", tr) ₺</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Rezervasyon Bilgileri</h5>
+                        <form method="post" action="/Tour/ReserveComplete">
+                            <input type="hidden" name="tourId" value="@Model.Id" />
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Tarih</label>
+                                    <input type="date" name="date" min="@minDate" value="@minDate" class="form-control" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kişi Sayısı</label>
+                                    <input type="number" name="personCount" id="pcount" min="1" value="1" class="form-control" required />
+                                </div>
+                            </div>
+
+                            <hr class="my-4" />
+                            <h6 class="mb-3">İletişim Bilgileri</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Ad Soyad</label>
+                                    <input name="customerName" class="form-control" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Telefon</label>
+                                    <input name="customerPhone" class="form-control" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">E-posta</label>
+                                    <input type="email" name="customerEmail" class="form-control" required />
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4 p-3 rounded" style="background:#f5f3ff;">
+                                <div>
+                                    <div class="text-muted small"><span id="pc">1</span> kişi × @Model.PricePerPerson.ToString("#,##0", tr) ₺</div>
+                                    <div class="fs-3 fw-bold" style="color:#7c3aed;"><span id="total">@Model.PricePerPerson.ToString("#,##0", tr)</span> ₺</div>
+                                </div>
+                                <button class="btn btn-lg" style="background:#16a34a; color:#fff;"><i class="bi bi-check-circle"></i> Rezervasyonu Tamamla</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var per = @Model.PricePerPerson.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        document.getElementById('pcount').addEventListener('input', function () {
+            var n = Math.max(1, parseInt(this.value) || 1);
+            document.getElementById('pc').textContent = n;
+            document.getElementById('total').textContent = (n * per).toLocaleString('tr-TR');
+        });
+    </script>
+}

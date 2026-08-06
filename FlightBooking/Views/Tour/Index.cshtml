@@ -1,0 +1,93 @@
+@model List<FlightBooking.Entities.Tour>
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Turlar & Aktiviteler";
+    ViewBag.PageTitle = "Turlar & Aktiviteler";
+    ViewBag.PageSubtitle = "Şehir turları, geziler ve unutulmaz aktiviteler";
+    var cities = ViewBag.Cities as List<string> ?? new List<string>();
+    var selectedCity = ViewBag.City as string;
+    var selectedCat = ViewBag.Category as string ?? "Tümü";
+    var categories = new[] { "Tümü", "Tur", "Aktivite", "Gezi" };
+    var tr = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-11">
+
+        <form method="get" action="/Tour/Index" class="card border-0 shadow-sm p-4 mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Şehir</label>
+                    <select name="city" class="form-select form-select-lg">
+                        <option value="">Tüm şehirler</option>
+                        @foreach (var c in cities)
+                        {
+                            <option value="@c" selected="@(c == selectedCity)">@c</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Tür</label>
+                    <select name="category" class="form-select form-select-lg">
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c" selected="@(c == selectedCat)">@c</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-lg w-100" style="background:#1d4ed8; color:#fff;"><i class="bi bi-search"></i> Ara</button>
+                </div>
+            </div>
+        </form>
+
+        <h5 class="mb-3">@Model.Count sonuç bulundu</h5>
+
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> Uygun tur/aktivite bulunamadı.</div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var t in Model)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-0 shadow-sm h-100 tour-card">
+                            <div class="tour-head">
+                                <i class="bi @t.Icon"></i>
+                                <span class="tour-cat">@t.Category</span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="mb-1">@t.Title</h5>
+                                <div class="text-muted small mb-2"><i class="bi bi-geo-alt"></i> @t.City · <i class="bi bi-clock"></i> @t.Duration</div>
+                                <p class="small text-secondary">@t.Description</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                    <div>
+                                        <div class="fs-5 fw-bold text-primary">@t.PricePerPerson.ToString("#,##0", tr) ₺</div>
+                                        <div class="small text-muted">/ kişi</div>
+                                    </div>
+                                    <a href="/Tour/Reserve?id=@t.Id" class="btn" style="background:#16a34a; color:#fff;">Rezervasyon</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .tour-card { transition: transform .18s, box-shadow .18s; overflow: hidden; }
+        .tour-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,.1) !important; }
+        .tour-head {
+            background: linear-gradient(120deg,#7c3aed,#2563eb); color:#fff;
+            padding: 26px 18px; display:flex; justify-content:space-between; align-items:center;
+        }
+        .tour-head i:first-child { font-size:44px; opacity:.95; }
+        .tour-cat { font-size:12px; font-weight:600; background:rgba(255,255,255,.2); padding:3px 12px; border-radius:20px; }
+    </style>
+}
