@@ -124,6 +124,21 @@ namespace FlightBooking.Controllers
                 booking = null;
                 ViewBag.NotFound = true;
             }
+
+            // Görsel koltuk haritası için: bu uçuştaki tüm dolu koltuklar
+            if (booking != null)
+            {
+                var allBookings = await _bookingService.GetAllRawAsync();
+                var occupied = allBookings
+                    .Where(b => b.FlightId == booking.FlightId)
+                    .SelectMany(b => b.Passengers)
+                    .Where(p => !string.IsNullOrWhiteSpace(p.SeatNumber))
+                    .Select(p => p.SeatNumber!)
+                    .Distinct()
+                    .ToList();
+                ViewBag.OccupiedSeats = occupied;
+            }
+
             return View(booking);
         }
 

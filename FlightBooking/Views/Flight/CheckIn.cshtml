@@ -71,8 +71,11 @@
                                 <input type="hidden" name="passengerIndex" value="@i" />
                                 <div class="row g-3">
                                     <div class="col-md-3">
-                                        <label class="form-label">Koltuk No</label>
-                                        <input name="seatNumber" class="form-control" placeholder="14A" required />
+                                        <label class="form-label">Koltuk</label>
+                                        <input type="hidden" name="seatNumber" class="seat-input" required />
+                                        <button type="button" class="btn btn-outline-primary w-100 seat-open">
+                                            <i class="bi bi-grid-3x3-gap"></i> <span class="seat-label">Koltuk Seç</span>
+                                        </button>
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label">Ek Bagaj</label>
@@ -114,6 +117,34 @@
     </div>
 </div>
 
+@{
+    var occupiedSeats = ViewBag.OccupiedSeats as List<string> ?? new List<string>();
+}
+
+<!-- Koltuk haritası modalı -->
+<div id="seatModal" class="seat-modal">
+    <div class="seat-modal-box">
+        <div class="seat-modal-head">
+            <div>
+                <strong>Koltuk Seçimi</strong>
+                <div class="small text-muted">Uçağın gidiş yönüne göre yerleşim</div>
+            </div>
+            <button type="button" class="btn-close" onclick="closeSeatModal()"></button>
+        </div>
+
+        <div class="seat-legend">
+            <span><i class="seat-dot free"></i> Boş</span>
+            <span><i class="seat-dot taken"></i> Dolu</span>
+            <span><i class="seat-dot sel"></i> Seçili</span>
+        </div>
+
+        <div class="seat-cabin">
+            <div class="seat-cockpit"><i class="bi bi-airplane"></i> Ön</div>
+            <div id="seatGrid" class="seat-grid"></div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         function hesapla(form) {
@@ -127,5 +158,112 @@
         document.querySelectorAll('.checkin-form').forEach(function (f) {
             f.querySelectorAll('.js-extra').forEach(function (el) { el.addEventListener('change', function () { hesapla(f); }); });
         });
+
+        // ---- Görsel koltuk haritası ----
+        var occupied = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(occupiedSeats));
+        var takenSet = new Set(occupied);          // uçuştaki dolu koltuklar
+        var chosen = {};                            // bu oturumda seçilenler {seat: formEl}
+        var activeForm = null;
+        var rows = 30, cols = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+        function buildGrid() {
+            var g = document.getElementById('seatGrid');
+            g.innerHTML = '';
+            for (var r = 1; r <= rows; r++) {
+                var rowEl = document.createElement('div');
+                rowEl.className = 'seat-row';
+                var num = document.createElement('span');
+                num.className = 'seat-rownum';
+                num.textContent = r;
+                rowEl.appendChild(num);
+                cols.forEach(function (c, idx) {
+                    if (idx === 3) {
+                        var aisle = document.createElement('span');
+                        aisle.className = 'seat-aisle';
+                        rowEl.appendChild(aisle);
+                    }
+                    var seat = r + c;
+                    var s = document.createElement('button');
+                    s.type = 'button';
+                    s.className = 'seat';
+                    s.textContent = c;
+                    s.dataset.seat = seat;
+                    if (takenSet.has(seat) && !(chosen[seat])) { s.classList.add('taken'); s.disabled = true; }
+                    s.addEventListener('click', function () { pickSeat(this.dataset.seat); });
+                    rowEl.appendChild(s);
+                });
+                g.appendChild(rowEl);
+            }
+        }
+
+        function refreshGrid() {
+            document.querySelectorAll('#seatGrid .seat').forEach(function (s) {
+                var seat = s.dataset.seat;
+                s.classList.remove('sel');
+                var mineHere = activeForm && activeForm.querySelector('.seat-input').value === seat;
+                if (mineHere) s.classList.add('sel');
+            });
+        }
+
+        function openSeatModal(form) {
+            activeForm = form;
+            buildGrid();
+            refreshGrid();
+            document.getElementById('seatModal').classList.add('open');
+        }
+        function closeSeatModal() {
+            document.getElementById('seatModal').classList.remove('open');
+        }
+
+        function pickSeat(seat) {
+            if (takenSet.has(seat)) return;
+            // önceki seçimi serbest bırak
+            var prev = activeForm.querySelector('.seat-input').value;
+            if (prev) { takenSet.delete(prev); delete chosen[prev]; }
+            // yeni seçimi işaretle
+            activeForm.querySelector('.seat-input').value = seat;
+            activeForm.querySelector('.seat-label').textContent = 'Koltuk ' + seat;
+            takenSet.add(seat);
+            chosen[seat] = activeForm;
+            closeSeatModal();
+        }
+
+        document.querySelectorAll('.seat-open').forEach(function (btn) {
+            btn.addEventListener('click', function () { openSeatModal(this.closest('form')); });
+        });
+        document.getElementById('seatModal').addEventListener('click', function (e) {
+            if (e.target === this) closeSeatModal();
+        });
     </script>
+    <style>
+        .seat-modal {
+            position: fixed; inset: 0; background: rgba(15,23,42,.6); z-index: 1050;
+            display: none; align-items: center; justify-content: center; padding: 16px;
+        }
+        .seat-modal.open { display: flex; }
+        .seat-modal-box {
+            background: #fff; border-radius: 16px; width: 100%; max-width: 440px;
+            max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.35);
+        }
+        .seat-modal-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid #eef2f7; }
+        .seat-legend { display: flex; gap: 16px; justify-content: center; padding: 12px; font-size: 12.5px; color: #475569; }
+        .seat-dot { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: middle; margin-right: 4px; }
+        .seat-dot.free { background: #fff; border: 1.5px solid #cbd5e1; }
+        .seat-dot.taken { background: #cbd5e1; }
+        .seat-dot.sel { background: #16a34a; }
+        .seat-cabin { padding: 0 18px 22px; }
+        .seat-cockpit { text-align: center; color: #64748b; font-size: 13px; padding: 8px; border-bottom: 2px dashed #e2e8f0; margin-bottom: 14px; }
+        .seat-grid { display: flex; flex-direction: column; gap: 6px; }
+        .seat-row { display: flex; align-items: center; gap: 6px; justify-content: center; }
+        .seat-rownum { width: 22px; text-align: center; font-size: 11px; color: #94a3b8; }
+        .seat-aisle { width: 18px; }
+        .seat {
+            width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid #cbd5e1;
+            background: #fff; color: #334155; font-size: 12px; font-weight: 600; cursor: pointer;
+            transition: all .12s;
+        }
+        .seat:hover:not(.taken) { border-color: #1d4ed8; background: #eff6ff; }
+        .seat.taken { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0; }
+        .seat.sel { background: #16a34a; color: #fff; border-color: #16a34a; }
+    </style>
 }
