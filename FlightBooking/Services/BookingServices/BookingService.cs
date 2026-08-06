@@ -47,6 +47,7 @@ namespace FlightBooking.Services.BookingServices
                 TotalPrice = totalPrice,
                 BookingDate = DateTime.Now,
                 Status = "Confirmed",
+                PaymentStatus = "Bekliyor",
                 PnrNumber = await GenerateUniquePnrAsync()
             };
 
@@ -64,6 +65,12 @@ namespace FlightBooking.Services.BookingServices
             return await _bookingCollection.Find(x => true).ToListAsync();
         }
 
+        public async Task MarkAsPaidAsync(string pnr)
+        {
+            var update = Builders<Booking>.Update.Set(x => x.PaymentStatus, "Ödendi");
+            await _bookingCollection.UpdateOneAsync(x => x.PnrNumber == pnr, update);
+        }
+
         public async Task<List<ResultBookingDto>> GetAllBookingsAsync()
         {
             var bookings = await _bookingCollection.Find(x => true).ToListAsync();
@@ -78,7 +85,8 @@ namespace FlightBooking.Services.BookingServices
                 PassengerCount = b.Passengers?.Count ?? 0,
                 TotalPrice = b.TotalPrice,
                 BookingDate = b.BookingDate,
-                Status = b.Status
+                Status = b.Status,
+                PaymentStatus = string.IsNullOrEmpty(b.PaymentStatus) ? "Bekliyor" : b.PaymentStatus
             }).ToList();
         }
 

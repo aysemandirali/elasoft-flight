@@ -9,5 +9,6 @@ namespace FlightBooking.Services.BookingServices
         Task<List<ResultBookingDto>> GetAllBookingsAsync();
         Task<List<Booking>> GetAllRawAsync(); // gomulu yolcularla birlikte ham rezervasyonlar
         Task<Booking?> GetByPnrAsync(string pnr); // PNR ile rezervasyonu getir
+        Task MarkAsPaidAsync(string pnr);         // odemeyi tamamla (PaymentStatus = Ödendi)
     }
 }

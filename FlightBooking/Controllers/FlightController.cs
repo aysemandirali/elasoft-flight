@@ -48,13 +48,38 @@ namespace FlightBooking.Controllers
             return View(flight);
         }
 
-        // Bilet alma formunu kaydet, PNR ile onay sayfasina gec
+        // Bilet alma formunu kaydet, odeme ekranina gec
         [HttpPost]
         public async Task<IActionResult> Book(CreateBookingDto dto)
         {
             var pnr = await _bookingService.CreateBookingAsync(dto);
-            TempData["Pnr"] = pnr;
-            return RedirectToAction("Confirmation");
+            return RedirectToAction("Payment", new { pnr });
+        }
+
+        // Odeme ekrani: rezervasyon ozeti + kart formu
+        [HttpGet]
+        public async Task<IActionResult> Payment(string pnr)
+        {
+            var booking = await _bookingService.GetByPnrAsync(pnr);
+            if (booking == null) return RedirectToAction("Index");
+
+            // Zaten odenmisse tekrar odeme alma
+            if (booking.PaymentStatus == "Ödendi")
+                return RedirectToAction("Confirmation", new { pnr });
+
+            ViewBag.Flight = await _flightService.GetFlightByIdAsync(booking.FlightId);
+            return View(booking);
+        }
+
+        // Odemeyi tamamla (simulasyon): kart bilgileri dogru formatta ise odendi say
+        [HttpPost]
+        public async Task<IActionResult> PaymentComplete(string pnr)
+        {
+            var booking = await _bookingService.GetByPnrAsync(pnr);
+            if (booking == null) return RedirectToAction("Index");
+
+            await _bookingService.MarkAsPaidAsync(pnr);
+            return RedirectToAction("Confirmation", new { pnr });
         }
 
         // Onay sayfasi (PNR gosterir)
@@ -126,9 +151,16 @@ namespace FlightBooking.Controllers
             return View(results);
         }
 
-        public IActionResult Confirmation()
+        public async Task<IActionResult> Confirmation(string? pnr)
         {
-            ViewBag.Pnr = TempData["Pnr"] as string;
+            pnr ??= TempData["Pnr"] as string;
+            ViewBag.Pnr = pnr;
+
+            if (!string.IsNullOrWhiteSpace(pnr))
+            {
+                var booking = await _bookingService.GetByPnrAsync(pnr);
+                ViewBag.Paid = booking?.PaymentStatus == "Ödendi";
+            }
             return View();
         }
     }
