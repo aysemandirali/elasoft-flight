@@ -1,0 +1,74 @@
+@model List<FlightBooking.Entities.TransferVehicle>
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Havalimanı Transferi";
+    ViewBag.PageTitle = "Havalimanı Transferi";
+    ViewBag.PageSubtitle = "Havalimanı ve otel arası özel, konforlu transfer";
+    var tr = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+    var minDate = DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-11">
+
+        <!-- Güzergah bilgisi (araç seçiminde forma taşınır) -->
+        <div class="card border-0 shadow-sm p-4 mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Nereden</label>
+                    <input id="fromLoc" class="form-control form-control-lg" placeholder="Örn: İstanbul Havalimanı (IST)" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Nereye</label>
+                    <input id="toLoc" class="form-control form-control-lg" placeholder="Örn: Taksim, İstanbul" />
+                </div>
+                <div class="col-md-2">
+                    <div class="text-muted small"><i class="bi bi-info-circle"></i> Araç seçin, detayları bir sonraki adımda girin.</div>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="mb-3">Transfer Araçları</h5>
+
+        <div class="row g-3">
+            @foreach (var v in Model)
+            {
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm h-100 tr-card">
+                        <div class="tr-head"><i class="bi @v.Icon"></i></div>
+                        <div class="card-body text-center">
+                            <h5 class="mb-1">@v.VehicleType</h5>
+                            <div class="text-muted small mb-2"><i class="bi bi-people"></i> @v.Capacity kişiye kadar</div>
+                            <p class="small text-secondary">@v.Description</p>
+                            <div class="fs-4 fw-bold text-primary mb-2">@v.Price.ToString("#,##0", tr) ₺</div>
+                            <div class="small text-muted mb-3">tek yön</div>
+                            <a href="#" class="btn w-100 tr-select" data-id="@v.Id" style="background:#16a34a; color:#fff;">Seç</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .tr-card { transition: transform .18s, box-shadow .18s; overflow: hidden; }
+        .tr-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,.1) !important; }
+        .tr-head {
+            background: linear-gradient(120deg,#0f766e,#0ea5e9); color:#fff;
+            padding: 26px; text-align:center; font-size:44px;
+        }
+    </style>
+    <script>
+        document.querySelectorAll('.tr-select').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var from = encodeURIComponent(document.getElementById('fromLoc').value);
+                var to = encodeURIComponent(document.getElementById('toLoc').value);
+                window.location.href = '/Transfer/Reserve?id=' + this.dataset.id + '&from=' + from + '&to=' + to;
+            });
+        });
+    </script>
+}
