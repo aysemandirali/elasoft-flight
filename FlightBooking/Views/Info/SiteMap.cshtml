@@ -1,0 +1,66 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Site Haritası";
+    ViewBag.PageTitle = "Site Haritası";
+    ViewBag.PageSubtitle = "Geair'deki tüm sayfalara hızlı erişim";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <h6 class="text-primary mb-3"><i class="bi bi-airplane"></i> Uçuş İşlemleri</h6>
+                        <ul class="list-unstyled sitemap-list">
+                            <li><a href="/Flight/Index">Uçuş Ara</a></li>
+                            <li><a href="/Flight/MyBooking">Seyahatlerim</a></li>
+                            <li><a href="/Flight/CheckIn">Online Check-in</a></li>
+                            <li><a href="/Flight/FlightStatus">Uçuş Durumu</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <h6 class="text-primary mb-3"><i class="bi bi-suitcase2"></i> Ek Hizmetler</h6>
+                        <ul class="list-unstyled sitemap-list">
+                            <li><a href="/CarRental/Index">Araç Kiralama</a></li>
+                            <li><a href="/Tour/Index">Turlar & Aktiviteler</a></li>
+                            <li><a href="/Transfer/Index">Havalimanı Transferi</a></li>
+                            <li><a href="/Agent/Index">AI Asistan & Yardım</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <h6 class="text-primary mb-3"><i class="bi bi-person"></i> Hesap & Bilgi</h6>
+                        <ul class="list-unstyled sitemap-list">
+                            <li><a href="/Account/Login">Giriş Yap</a></li>
+                            <li><a href="/Account/Register">Üye Ol</a></li>
+                            <li><a href="/Info/Terms">Kullanım Koşulları</a></li>
+                            <li><a href="/Info/Privacy">Gizlilik Politikası</a></li>
+                            <li><a href="/Info/Cookies">Çerez Politikası</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .sitemap-list li { padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+        .sitemap-list li:last-child { border-bottom: none; }
+        .sitemap-list a { color: #334155; text-decoration: none; }
+        .sitemap-list a:hover { color: #1d4ed8; padding-left: 4px; transition: .15s; }
+    </style>
+}
