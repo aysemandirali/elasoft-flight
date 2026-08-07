@@ -46,14 +46,6 @@
                         <div class="header-action d-none d-md-block">
                             <ul>
 
-                                <li class="country">
-                                    <a href="#" style="font-size:15px;">🇹🇷 TRY</a>
-                                </li>
-
-                                <li class="question">
-                                    <a href="#">?</a>
-                                </li>
-
                                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                                 {
                                     var displayName = (User.Identity.Name ?? "Hesabım").Split(' ')[0];
