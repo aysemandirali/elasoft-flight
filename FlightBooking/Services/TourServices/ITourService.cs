@@ -10,5 +10,6 @@ namespace FlightBooking.Services.TourServices
         Task<Tour?> GetByIdAsync(string id);
         Task<TourReservation> CreateReservationAsync(TourReservation reservation);
         Task<TourReservation?> GetReservationByCodeAsync(string code);
+        Task<List<TourReservation>> GetAllReservationsAsync();
     }
 }

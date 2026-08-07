@@ -10,5 +10,6 @@ namespace FlightBooking.Services.CarRentalServices
         Task<Car?> GetByIdAsync(string id);
         Task<CarReservation> CreateReservationAsync(CarReservation reservation);
         Task<CarReservation?> GetReservationByCodeAsync(string code);
+        Task<List<CarReservation>> GetAllReservationsAsync();
     }
 }

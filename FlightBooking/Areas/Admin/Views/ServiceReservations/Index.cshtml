@@ -1,0 +1,173 @@
+@using FlightBooking.Entities
+@{
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    ViewData["Title"] = "Ek Hizmet Rezervasyonları";
+    var cars = ViewBag.CarReservations as List<CarReservation> ?? new();
+    var tours = ViewBag.TourReservations as List<TourReservation> ?? new();
+    var transfers = ViewBag.TransferReservations as List<TransferReservation> ?? new();
+    var tr = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+}
+
+<div class="main-content" id="main-content">
+
+    <div class="page-header">
+        <div>
+            <div class="page-breadcrumb">
+                <i class="bi bi-house"></i> <span>Operasyonlar</span> <span class="sep">›</span> <span>Ek Hizmet Rezervasyonları</span>
+            </div>
+            <h1 class="page-title">Ek Hizmet Rezervasyonları</h1>
+            <p class="page-desc">Araç kiralama, tur ve havalimanı transferi rezervasyonları.</p>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="bi bi-car-front-fill"></i></div>
+            <div><div class="stat-value">@ViewBag.CarCount</div><div class="stat-label">Araç Kiralama</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="bi bi-compass-fill"></i></div>
+            <div><div class="stat-value">@ViewBag.TourCount</div><div class="stat-label">Tur & Aktivite</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="bi bi-bus-front-fill"></i></div>
+            <div><div class="stat-value">@ViewBag.TransferCount</div><div class="stat-label">Transfer</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon red"><i class="bi bi-cash-stack"></i></div>
+            <div><div class="stat-value">@ViewBag.Revenue ₺</div><div class="stat-label">Ek Hizmet Geliri</div></div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="srv-tabs">
+                <button class="srv-tab active" data-tab="cars"><i class="bi bi-car-front"></i> Araç (@cars.Count)</button>
+                <button class="srv-tab" data-tab="tours"><i class="bi bi-compass"></i> Tur (@tours.Count)</button>
+                <button class="srv-tab" data-tab="transfers"><i class="bi bi-bus-front"></i> Transfer (@transfers.Count)</button>
+            </div>
+        </div>
+
+        <!-- Araç -->
+        <div class="srv-panel" id="cars">
+            @if (cars.Count == 0)
+            {
+                <div class="srv-empty"><i class="bi bi-car-front"></i><p>Henüz araç kiralama rezervasyonu yok.</p></div>
+            }
+            else
+            {
+                <div style="overflow-x:auto;">
+                    <table class="flights-table">
+                        <thead><tr><th>Kod</th><th>Araç</th><th>Teslim Yeri</th><th>Alış</th><th>İade</th><th>Gün</th><th>Tutar</th><th>Müşteri</th></tr></thead>
+                        <tbody>
+                            @foreach (var c in cars)
+                            {
+                                <tr>
+                                    <td><strong style="font-family:'Syne',sans-serif;color:var(--navy);">@c.ReservationCode</strong></td>
+                                    <td>@c.CarName</td>
+                                    <td>@c.PickupLocation</td>
+                                    <td>@c.PickupDate.ToString("dd.MM.yyyy")</td>
+                                    <td>@c.DropoffDate.ToString("dd.MM.yyyy")</td>
+                                    <td>@c.Days</td>
+                                    <td class="time-cell">@c.TotalPrice.ToString("#,##0", tr) ₺</td>
+                                    <td>@c.CustomerName<div class="small text-muted">@c.CustomerEmail</div></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <!-- Tur -->
+        <div class="srv-panel" id="tours" style="display:none;">
+            @if (tours.Count == 0)
+            {
+                <div class="srv-empty"><i class="bi bi-compass"></i><p>Henüz tur rezervasyonu yok.</p></div>
+            }
+            else
+            {
+                <div style="overflow-x:auto;">
+                    <table class="flights-table">
+                        <thead><tr><th>Kod</th><th>Tur</th><th>Şehir</th><th>Tarih</th><th>Kişi</th><th>Tutar</th><th>Müşteri</th></tr></thead>
+                        <tbody>
+                            @foreach (var t in tours)
+                            {
+                                <tr>
+                                    <td><strong style="font-family:'Syne',sans-serif;color:var(--navy);">@t.ReservationCode</strong></td>
+                                    <td>@t.TourTitle</td>
+                                    <td>@t.City</td>
+                                    <td>@t.Date.ToString("dd.MM.yyyy")</td>
+                                    <td>@t.PersonCount</td>
+                                    <td class="time-cell">@t.TotalPrice.ToString("#,##0", tr) ₺</td>
+                                    <td>@t.CustomerName<div class="small text-muted">@t.CustomerEmail</div></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <!-- Transfer -->
+        <div class="srv-panel" id="transfers" style="display:none;">
+            @if (transfers.Count == 0)
+            {
+                <div class="srv-empty"><i class="bi bi-bus-front"></i><p>Henüz transfer rezervasyonu yok.</p></div>
+            }
+            else
+            {
+                <div style="overflow-x:auto;">
+                    <table class="flights-table">
+                        <thead><tr><th>Kod</th><th>Araç</th><th>Güzergah</th><th>Tarih/Saat</th><th>Yolcu</th><th>Yön</th><th>Tutar</th><th>Müşteri</th></tr></thead>
+                        <tbody>
+                            @foreach (var t in transfers)
+                            {
+                                <tr>
+                                    <td><strong style="font-family:'Syne',sans-serif;color:var(--navy);">@t.ReservationCode</strong></td>
+                                    <td>@t.VehicleType</td>
+                                    <td>@t.FromLocation → @t.ToLocation</td>
+                                    <td>@t.Date.ToString("dd.MM.yyyy") @t.Time</td>
+                                    <td>@t.PassengerCount</td>
+                                    <td>@(t.RoundTrip ? "Gidiş-dönüş" : "Tek yön")</td>
+                                    <td class="time-cell">@t.TotalPrice.ToString("#,##0", tr) ₺</td>
+                                    <td>@t.CustomerName<div class="small text-muted">@t.CustomerEmail</div></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Styles {
+    <style>
+        .srv-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .srv-tab {
+            border: 1.5px solid var(--gray-100); background: var(--gray-50); color: var(--gray-500);
+            padding: 8px 16px; border-radius: 9px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; transition: all .18s;
+        }
+        .srv-tab:hover { border-color: var(--accent); color: var(--accent); }
+        .srv-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .srv-empty { padding: 48px; text-align: center; color: var(--gray-500); }
+        .srv-empty i { font-size: 40px; opacity: .4; }
+        .srv-empty p { margin-top: 12px; }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.srv-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.srv-tab').forEach(function (t) { t.classList.remove('active'); });
+                this.classList.add('active');
+                document.querySelectorAll('.srv-panel').forEach(function (p) { p.style.display = 'none'; });
+                document.getElementById(this.dataset.tab).style.display = '';
+            });
+        });
+    </script>
+}

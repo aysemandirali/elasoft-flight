@@ -56,6 +56,11 @@ namespace FlightBooking.Services.TransferServices
             return await _reservations.Find(x => x.ReservationCode == code).FirstOrDefaultAsync();
         }
 
+        public async Task<List<TransferReservation>> GetAllReservationsAsync()
+        {
+            return await _reservations.Find(x => true).SortByDescending(x => x.CreatedAt).ToListAsync();
+        }
+
         private static string GenerateCode()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

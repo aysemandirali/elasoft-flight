@@ -9,5 +9,6 @@ namespace FlightBooking.Services.TransferServices
         Task<TransferVehicle?> GetByIdAsync(string id);
         Task<TransferReservation> CreateReservationAsync(TransferReservation reservation);
         Task<TransferReservation?> GetReservationByCodeAsync(string code);
+        Task<List<TransferReservation>> GetAllReservationsAsync();
     }
 }
