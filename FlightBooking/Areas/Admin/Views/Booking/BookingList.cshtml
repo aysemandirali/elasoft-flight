@@ -40,9 +40,9 @@
                             <td>@b.ContactEmail</td>
                             <td>@b.ContactPhone</td>
                             <td>@b.PassengerCount</td>
-                            <td>@b.TotalPrice</td>
+                            <td>@b.TotalPrice.ToString("#,##0", System.Globalization.CultureInfo.GetCultureInfo("tr-TR")) ₺</td>
                             <td>@b.BookingDate.ToString("dd.MM.yyyy HH:mm")</td>
-                            <td><span class="badge bg-success">@b.Status</span></td>
+                            <td><span class="badge bg-success">@(b.Status == "Confirmed" ? "Onaylandı" : b.Status == "Cancelled" ? "İptal Edildi" : b.Status)</span></td>
                             <td>
                                 @if (b.PaymentStatus == "Ödendi")
                                 {
