@@ -18,7 +18,7 @@
             <tr><th>Süre</th><td>@Model.DurationMinutes dk</td></tr>
             <tr><th>Koltuk</th><td>@Model.AvailableSeats / @Model.TotalSeats boş</td></tr>
             <tr><th>Fiyat</th><td>@Model.BasePrice @Model.Currency</td></tr>
-            <tr><th>Durum</th><td><span class="badge bg-secondary">@Model.Status</span></td></tr>
+            <tr><th>Durum</th><td><span class="badge bg-secondary">@(Model.Status switch { "Scheduled" => "Planlandı", "Delayed" => "Gecikmeli", "Cancelled" => "İptal Edildi", "Completed" => "Tamamlandı", "Boarding" => "Biniş", _ => Model.Status })</span></td></tr>
         </table>
     </div>
 
