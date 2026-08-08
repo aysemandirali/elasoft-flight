@@ -24,7 +24,7 @@
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Alış</span><strong>@Model.PickupDate.ToString("dd.MM.yyyy")</strong></li>
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">İade</span><strong>@Model.DropoffDate.ToString("dd.MM.yyyy")</strong></li>
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Süre</span><strong>@Model.Days gün</strong></li>
-                    <li class="d-flex justify-content-between py-2"><span class="text-muted">Toplam</span><strong class="text-primary fs-5">@Model.TotalPrice.ToString("#,##0", tr) ₺</strong></li>
+                    <li class="d-flex justify-content-between py-2"><span class="text-muted">Toplam</span><strong class="text-primary fs-5">@Html.Money(Model.TotalPrice)</strong></li>
                 </ul>
             </div>
 

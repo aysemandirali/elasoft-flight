@@ -25,7 +25,7 @@
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Tarih / Saat</span><strong>@Model.Date.ToString("dd.MM.yyyy") @Model.Time</strong></li>
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Yolcu</span><strong>@Model.PassengerCount</strong></li>
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Yön</span><strong>@(Model.RoundTrip ? "Gidiş-dönüş" : "Tek yön")</strong></li>
-                    <li class="d-flex justify-content-between py-2"><span class="text-muted">Toplam</span><strong class="text-primary fs-5">@Model.TotalPrice.ToString("#,##0", tr) ₺</strong></li>
+                    <li class="d-flex justify-content-between py-2"><span class="text-muted">Toplam</span><strong class="text-primary fs-5">@Html.Money(Model.TotalPrice)</strong></li>
                 </ul>
             </div>
 

@@ -54,7 +54,7 @@
                             </div>
                         </div>
                         <div class="text-end">
-                            <div class="price">@f.BasePrice @f.Currency</div>
+                            <div class="price">@Html.Money(f.BasePrice)</div>
                             <a href="/Flight/Book/@f.FlightId" class="btn btn-primary mt-2"><i class="bi bi-ticket-perforated"></i> Bilet Al</a>
                         </div>
                     </div>

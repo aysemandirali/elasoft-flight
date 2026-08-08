@@ -29,7 +29,7 @@
                             <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-people"></i> Koltuk</span><strong>@Model.Seats</strong></li>
                             <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-gear"></i> Vites</span><strong>@Model.Transmission</strong></li>
                             <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-fuel-pump"></i> Yakıt</span><strong>@Model.Fuel</strong></li>
-                            <li class="d-flex justify-content-between py-2"><span class="text-muted"><i class="bi bi-cash"></i> Günlük</span><strong>@Model.DailyPrice.ToString("#,##0", tr) ₺</strong></li>
+                            <li class="d-flex justify-content-between py-2"><span class="text-muted"><i class="bi bi-cash"></i> Günlük</span><strong>@Html.Money(Model.DailyPrice)</strong></li>
                         </ul>
                     </div>
                 </div>
@@ -72,8 +72,8 @@
 
                             <div class="d-flex justify-content-between align-items-center mt-4 p-3 rounded" style="background:#eff6ff;">
                                 <div>
-                                    <div class="text-muted small"><span id="dayCount">@days</span> gün × @Model.DailyPrice.ToString("#,##0", tr) ₺</div>
-                                    <div class="fs-3 fw-bold text-primary"><span id="totalPrice">@total.ToString("#,##0", tr)</span> ₺</div>
+                                    <div class="text-muted small"><span id="dayCount">@days</span> gün × @Html.Money(Model.DailyPrice)</div>
+                                    <div class="fs-3 fw-bold text-primary" id="totalPrice">@Html.Money(total)</div>
                                 </div>
                                 <button class="btn btn-lg" style="background:#16a34a; color:#fff;"><i class="bi bi-check-circle"></i> Rezervasyonu Tamamla</button>
                             </div>
@@ -89,13 +89,21 @@
 @section Scripts {
     <script>
         var daily = @Model.DailyPrice.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var curRate = @MoneyHelper.Rate(Context).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var curSym = '@MoneyHelper.Symbol(Context)';
+        var curPre = @(MoneyHelper.SymbolPrefix(Context) ? "true" : "false");
+        function fmtMoney(tl) {
+            var v = Math.round(tl / curRate);
+            var s = v.toLocaleString(curPre ? 'en-US' : 'tr-TR');
+            return curPre ? curSym + s : s + ' ' + curSym;
+        }
         function recalc() {
             var p = new Date(document.getElementById('pickup').value);
             var d = new Date(document.getElementById('dropoff').value);
             var days = Math.max(1, Math.round((d - p) / 86400000));
             if (isNaN(days)) days = 1;
             document.getElementById('dayCount').textContent = days;
-            document.getElementById('totalPrice').textContent = (days * daily).toLocaleString('tr-TR');
+            document.getElementById('totalPrice').textContent = fmtMoney(days * daily);
         }
         document.getElementById('pickup').addEventListener('change', recalc);
         document.getElementById('dropoff').addEventListener('change', recalc);

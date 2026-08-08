@@ -24,7 +24,7 @@
                         <ul class="list-unstyled m-0">
                             <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-geo-alt"></i> Şehir</span><strong>@Model.City</strong></li>
                             <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-clock"></i> Süre</span><strong>@Model.Duration</strong></li>
-                            <li class="d-flex justify-content-between py-2"><span class="text-muted"><i class="bi bi-cash"></i> Kişi başı</span><strong>@Model.PricePerPerson.ToString("#,##0", tr) ₺</strong></li>
+                            <li class="d-flex justify-content-between py-2"><span class="text-muted"><i class="bi bi-cash"></i> Kişi başı</span><strong>@Html.Money(Model.PricePerPerson)</strong></li>
                         </ul>
                     </div>
                 </div>
@@ -66,8 +66,8 @@
 
                             <div class="d-flex justify-content-between align-items-center mt-4 p-3 rounded" style="background:#f5f3ff;">
                                 <div>
-                                    <div class="text-muted small"><span id="pc">1</span> kişi × @Model.PricePerPerson.ToString("#,##0", tr) ₺</div>
-                                    <div class="fs-3 fw-bold" style="color:#7c3aed;"><span id="total">@Model.PricePerPerson.ToString("#,##0", tr)</span> ₺</div>
+                                    <div class="text-muted small"><span id="pc">1</span> kişi × @Html.Money(Model.PricePerPerson)</div>
+                                    <div class="fs-3 fw-bold" style="color:#7c3aed;" id="total">@Html.Money(Model.PricePerPerson)</div>
                                 </div>
                                 <button class="btn btn-lg" style="background:#16a34a; color:#fff;"><i class="bi bi-check-circle"></i> Rezervasyonu Tamamla</button>
                             </div>
@@ -83,10 +83,18 @@
 @section Scripts {
     <script>
         var per = @Model.PricePerPerson.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var curRate = @MoneyHelper.Rate(Context).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var curSym = '@MoneyHelper.Symbol(Context)';
+        var curPre = @(MoneyHelper.SymbolPrefix(Context) ? "true" : "false");
+        function fmtMoney(tl) {
+            var v = Math.round(tl / curRate);
+            var s = v.toLocaleString(curPre ? 'en-US' : 'tr-TR');
+            return curPre ? curSym + s : s + ' ' + curSym;
+        }
         document.getElementById('pcount').addEventListener('input', function () {
             var n = Math.max(1, parseInt(this.value) || 1);
             document.getElementById('pc').textContent = n;
-            document.getElementById('total').textContent = (n * per).toLocaleString('tr-TR');
+            document.getElementById('total').textContent = fmtMoney(n * per);
         });
     </script>
 }

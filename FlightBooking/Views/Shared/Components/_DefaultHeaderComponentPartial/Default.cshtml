@@ -1,4 +1,28 @@
-﻿  <!-- preloader -->
+﻿@{
+    var curCode = Context.Request.Cookies["cur"] ?? "TRY";
+    var curLabel = curCode == "USD" ? "$ USD" : curCode == "EUR" ? "€ EUR" : "₺ TRY";
+    var langCode = Context.Request.Cookies["lang"] ?? "tr";
+    var ret = Context.Request.Path + Context.Request.QueryString;
+    string RetEnc(string path) => Uri.EscapeDataString(path);
+}
+<style>
+    .pref-dd { position: relative; display: inline-block; }
+    .pref-dd > a { cursor: pointer; }
+    .pref-menu {
+        position: absolute; top: 100%; right: 0; min-width: 150px; background: #fff;
+        border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.18); padding: 6px;
+        display: none; z-index: 3000; margin-top: 6px;
+    }
+    .pref-dd:hover .pref-menu { display: block; }
+    .pref-menu a {
+        display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 7px;
+        color: #334155 !important; font-size: 13.5px; text-decoration: none; white-space: nowrap;
+    }
+    .pref-menu a:hover { background: #f1f5f9; }
+    .pref-menu a.active { color: #1d4ed8 !important; font-weight: 600; background: #eff6ff; }
+    .pref-menu a.soon { opacity: .55; }
+</style>
+  <!-- preloader -->
 <div id="preloader">
     <div id="loading-center">
         <div class="loader">
@@ -28,31 +52,20 @@
                     <div class="header-top-right">
                         <ul>
                             <li><a href="/Account/AdminLogin" style="font-weight:600;"><i class="fa-solid fa-shield-halved"></i> Yönetici Girişi</a></li>
-                            <li><a href="#"><i class="fa-solid fa-turkish-lira-sign"></i> TRY</a></li>
-                            <li>
-                                <a href="#" style="font-weight:600; display:inline-flex; align-items:center; gap:6px;">
-                                    <svg width="20" height="14" viewBox="0 0 30 20" style="border-radius:2px; vertical-align:middle;">
-                                        <rect width="30" height="20" fill="#E30A17" />
-                                        <circle cx="11.5" cy="10" r="4.6" fill="#fff" />
-                                        <circle cx="13" cy="10" r="3.7" fill="#E30A17" />
-                                        <polygon fill="#fff" points="17.8,7.1 18.48,9.06 20.56,9.1 18.9,10.36 19.51,12.35 17.8,11.16 16.09,12.35 16.7,10.36 15.04,9.1 17.12,9.06" />
-                                    </svg>
-                                    Türkçe
-                                </a>
-                                <span style="opacity:.5;">|</span>
-                                <a href="#" title="İngilizce yakında eklenecek" style="opacity:.7; display:inline-flex; align-items:center; gap:6px;">
-                                    <svg width="20" height="14" viewBox="0 0 60 40" style="border-radius:2px; vertical-align:middle;">
-                                        <clipPath id="uk"><rect width="60" height="40" /></clipPath>
-                                        <g clip-path="url(#uk)">
-                                            <rect width="60" height="40" fill="#012169" />
-                                            <path d="M0,0 60,40 M60,0 0,40" stroke="#fff" stroke-width="8" />
-                                            <path d="M0,0 60,40 M60,0 0,40" stroke="#C8102E" stroke-width="4" />
-                                            <path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="12" />
-                                            <path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="7" />
-                                        </g>
-                                    </svg>
-                                    English
-                                </a>
+                            <li class="pref-dd">
+                                <a><i class="fa-solid fa-coins"></i> @curLabel <i class="fa-solid fa-angle-down" style="font-size:11px;"></i></a>
+                                <div class="pref-menu">
+                                    <a class="@(curCode == "TRY" ? "active" : "")" href="/Preferences/SetCurrency?code=TRY&returnUrl=@RetEnc(ret)">₺ Türk Lirası (TRY)</a>
+                                    <a class="@(curCode == "USD" ? "active" : "")" href="/Preferences/SetCurrency?code=USD&returnUrl=@RetEnc(ret)">$ ABD Doları (USD)</a>
+                                    <a class="@(curCode == "EUR" ? "active" : "")" href="/Preferences/SetCurrency?code=EUR&returnUrl=@RetEnc(ret)">€ Euro (EUR)</a>
+                                </div>
+                            </li>
+                            <li class="pref-dd">
+                                <a><i class="fa-solid fa-globe"></i> @(langCode == "en" ? "English" : "Türkçe") <i class="fa-solid fa-angle-down" style="font-size:11px;"></i></a>
+                                <div class="pref-menu">
+                                    <a class="@(langCode == "tr" ? "active" : "")" href="/Preferences/SetLanguage?code=tr&returnUrl=@RetEnc(ret)">🇹🇷 Türkçe</a>
+                                    <a class="soon" title="İngilizce çeviri yakında" href="/Preferences/SetLanguage?code=en&returnUrl=@RetEnc(ret)">🇬🇧 English (yakında)</a>
+                                </div>
                             </li>
                         </ul>
                     </div>

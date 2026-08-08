@@ -25,7 +25,7 @@
                         <p class="text-secondary small">@Model.Description</p>
                         <ul class="list-unstyled m-0">
                             <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted"><i class="bi bi-people"></i> Kapasite</span><strong>@Model.Capacity kişi</strong></li>
-                            <li class="d-flex justify-content-between py-2"><span class="text-muted"><i class="bi bi-cash"></i> Tek yön</span><strong>@Model.Price.ToString("#,##0", tr) ₺</strong></li>
+                            <li class="d-flex justify-content-between py-2"><span class="text-muted"><i class="bi bi-cash"></i> Tek yön</span><strong>@Html.Money(Model.Price)</strong></li>
                         </ul>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                             <div class="d-flex justify-content-between align-items-center mt-4 p-3 rounded" style="background:#ecfeff;">
                                 <div>
                                     <div class="text-muted small" id="wayLabel">Tek yön</div>
-                                    <div class="fs-3 fw-bold" style="color:#0f766e;"><span id="total">@Model.Price.ToString("#,##0", tr)</span> ₺</div>
+                                    <div class="fs-3 fw-bold" style="color:#0f766e;" id="total">@Html.Money(Model.Price)</div>
                                 </div>
                                 <button class="btn btn-lg" style="background:#16a34a; color:#fff;"><i class="bi bi-check-circle"></i> Rezervasyonu Tamamla</button>
                             </div>
@@ -103,9 +103,17 @@
 @section Scripts {
     <script>
         var base = @Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var curRate = @MoneyHelper.Rate(Context).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var curSym = '@MoneyHelper.Symbol(Context)';
+        var curPre = @(MoneyHelper.SymbolPrefix(Context) ? "true" : "false");
+        function fmtMoney(tl) {
+            var v = Math.round(tl / curRate);
+            var s = v.toLocaleString(curPre ? 'en-US' : 'tr-TR');
+            return curPre ? curSym + s : s + ' ' + curSym;
+        }
         document.getElementById('rt').addEventListener('change', function () {
             var total = this.checked ? base * 2 : base;
-            document.getElementById('total').textContent = total.toLocaleString('tr-TR');
+            document.getElementById('total').textContent = fmtMoney(total);
             document.getElementById('wayLabel').textContent = this.checked ? 'Gidiş-dönüş' : 'Tek yön';
         });
     </script>

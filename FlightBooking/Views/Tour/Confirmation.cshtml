@@ -23,7 +23,7 @@
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Şehir</span><strong>@Model.City</strong></li>
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Tarih</span><strong>@Model.Date.ToString("dd.MM.yyyy")</strong></li>
                     <li class="d-flex justify-content-between py-2 border-bottom"><span class="text-muted">Kişi</span><strong>@Model.PersonCount</strong></li>
-                    <li class="d-flex justify-content-between py-2"><span class="text-muted">Toplam</span><strong class="text-primary fs-5">@Model.TotalPrice.ToString("#,##0", tr) ₺</strong></li>
+                    <li class="d-flex justify-content-between py-2"><span class="text-muted">Toplam</span><strong class="text-primary fs-5">@Html.Money(Model.TotalPrice)</strong></li>
                 </ul>
             </div>
 

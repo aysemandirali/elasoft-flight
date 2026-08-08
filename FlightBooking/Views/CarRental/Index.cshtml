@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                                     <div>
-                                        <div class="fs-4 fw-bold text-primary">@car.DailyPrice.ToString("#,##0", System.Globalization.CultureInfo.GetCultureInfo("tr-TR")) ₺</div>
+                                        <div class="fs-4 fw-bold text-primary">@Html.Money(car.DailyPrice)</div>
                                         <div class="small text-muted">/ gün</div>
                                     </div>
                                     <a href="/CarRental/Reserve?id=@car.Id&pickupDate=@pickup&dropoffDate=@dropoff" class="btn" style="background:#16a34a; color:#fff;">Seç</a>
