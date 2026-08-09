@@ -11,5 +11,8 @@ namespace FlightBooking.Services.CheckInServices
         // uygular, biniş kartı üretir ve ayrı bir CheckIn kaydı (log) oluşturur.
         Task CheckInPassengerAsync(string pnr, int passengerIndex, string seatNumber,
                                    int extraBaggageKg, string? mealType, bool seatUpgrade);
+
+        // Secilen ek hizmetlerin toplam ucretini hesaplar (odeme adimi icin).
+        decimal CalculateExtraCost(int extraBaggageKg, string? mealType, bool seatUpgrade);
     }
 }

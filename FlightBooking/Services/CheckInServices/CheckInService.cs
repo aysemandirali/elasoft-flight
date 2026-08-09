@@ -74,6 +74,16 @@ namespace FlightBooking.Services.CheckInServices
             await _checkInCollection.InsertOneAsync(checkIn);
         }
 
+        // Ek hizmet toplam ucreti (odeme adiminda kullanilir)
+        public decimal CalculateExtraCost(int extraBaggageKg, string? mealType, bool seatUpgrade)
+        {
+            decimal total = 0m;
+            if (extraBaggageKg > 0) total += extraBaggageKg * 15m;
+            if (!string.IsNullOrEmpty(mealType) && mealType != "Yok") total += MealPrice(mealType);
+            if (seatUpgrade) total += 100m;
+            return total;
+        }
+
         // Yemek tipine gore ucret
         private static decimal MealPrice(string mealType) => mealType switch
         {

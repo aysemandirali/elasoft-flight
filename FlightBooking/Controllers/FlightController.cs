@@ -174,12 +174,66 @@ namespace FlightBooking.Controllers
             return View(booking);
         }
 
-        // Müşteri check-in'i tamamla (koltuk + ek hizmet), sonra aynı PNR'ı tekrar göster
+        // Müşteri check-in'i tamamla: ek hizmet ücreti varsa önce ödeme ekranına,
+        // yoksa doğrudan check-in'i uygula.
         [HttpPost]
         public async Task<IActionResult> CheckInComplete(string pnr, int passengerIndex, string seatNumber,
                                                          int extraBaggageKg, string? mealType, bool seatUpgrade)
         {
+            var extraCost = _checkInService.CalculateExtraCost(extraBaggageKg, mealType, seatUpgrade);
+
+            if (extraCost > 0)
+            {
+                // Ücretli ek hizmet seçildi -> ödeme adımına yönlendir
+                return RedirectToAction("CheckInPayment", new { pnr, passengerIndex, seatNumber, extraBaggageKg, mealType, seatUpgrade });
+            }
+
             await _checkInService.CheckInPassengerAsync(pnr, passengerIndex, seatNumber, extraBaggageKg, mealType, seatUpgrade);
+            return RedirectToAction("CheckIn", new { pnr });
+        }
+
+        // Ek hizmet ödeme ekranı (bagaj/yemek/koltuk ücreti için)
+        [HttpGet]
+        public async Task<IActionResult> CheckInPayment(string pnr, int passengerIndex, string seatNumber,
+                                                        int extraBaggageKg, string? mealType, bool seatUpgrade)
+        {
+            var booking = await _bookingService.GetByPnrAsync(pnr);
+            if (booking == null || passengerIndex < 0 || passengerIndex >= booking.Passengers.Count)
+                return RedirectToAction("CheckIn", new { pnr });
+
+            var extraCost = _checkInService.CalculateExtraCost(extraBaggageKg, mealType, seatUpgrade);
+
+            var p = booking.Passengers[passengerIndex];
+            ViewBag.PassengerName = $"{p.Name} {p.Surname}";
+            ViewBag.Pnr = pnr;
+            ViewBag.PassengerIndex = passengerIndex;
+            ViewBag.SeatNumber = seatNumber;
+            ViewBag.ExtraBaggageKg = extraBaggageKg;
+            ViewBag.MealType = mealType;
+            ViewBag.SeatUpgrade = seatUpgrade;
+            ViewBag.ExtraCost = extraCost;
+
+            return View();
+        }
+
+        // Ek hizmet ödemesini tamamla -> check-in'i uygula
+        [HttpPost]
+        public async Task<IActionResult> CheckInPaymentComplete(string pnr, int passengerIndex, string seatNumber,
+                                                               int extraBaggageKg, string? mealType, bool seatUpgrade,
+                                                               string? cardNumber, string? cardExpiry, string? cardCvv)
+        {
+            var digits = new string((cardNumber ?? "").Where(char.IsDigit).ToArray());
+            var cvvDigits = new string((cardCvv ?? "").Where(char.IsDigit).ToArray());
+            var expOk = System.Text.RegularExpressions.Regex.IsMatch(cardExpiry ?? "", @"^(0[1-9]|1[0-2])\/\d{2}$");
+
+            if (digits.Length != 16 || cvvDigits.Length != 3 || !expOk)
+            {
+                TempData["PayError"] = "Kart bilgileri geçersiz. Kart numarası 16 hane, CVV 3 hane ve son kullanma AA/YY biçiminde olmalı.";
+                return RedirectToAction("CheckInPayment", new { pnr, passengerIndex, seatNumber, extraBaggageKg, mealType, seatUpgrade });
+            }
+
+            await _checkInService.CheckInPassengerAsync(pnr, passengerIndex, seatNumber, extraBaggageKg, mealType, seatUpgrade);
+            TempData["CheckInOk"] = "Ödemeniz alındı ve check-in tamamlandı.";
             return RedirectToAction("CheckIn", new { pnr });
         }
 

@@ -1,0 +1,104 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Ek Hizmet Ödemesi";
+    ViewBag.PageTitle = "Ek Hizmet Ödemesi";
+    ViewBag.PageSubtitle = "Check-in sırasında seçtiğiniz ek hizmetlerin ödemesi";
+    var extraCost = (decimal)ViewBag.ExtraCost;
+    var baggage = (int)ViewBag.ExtraBaggageKg;
+    var meal = ViewBag.MealType as string;
+    var upgrade = (bool)ViewBag.SeatUpgrade;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="row g-4">
+
+            <!-- Özet -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Ek Hizmet Özeti</h5>
+                        <div class="text-muted small mb-2">Yolcu: <strong class="text-dark">@ViewBag.PassengerName</strong></div>
+                        <div class="text-muted small mb-3">Koltuk: <strong class="text-dark">@ViewBag.SeatNumber</strong></div>
+                        <ul class="list-unstyled m-0">
+                            @if (baggage > 0)
+                            {
+                                <li class="d-flex justify-content-between py-2 border-bottom"><span><i class="bi bi-suitcase"></i> Ek Bagaj (@baggage kg)</span><strong>@Html.Money(baggage * 15)</strong></li>
+                            }
+                            @if (!string.IsNullOrEmpty(meal) && meal != "Yok")
+                            {
+                                <li class="d-flex justify-content-between py-2 border-bottom"><span><i class="bi bi-cup-hot"></i> Yemek: @meal</span><strong>@Html.Money(meal == "Standart" ? 50 : meal == "Vejetaryen" ? 80 : 150)</strong></li>
+                            }
+                            @if (upgrade)
+                            {
+                                <li class="d-flex justify-content-between py-2 border-bottom"><span><i class="bi bi-star"></i> Ön Sıra Koltuk</span><strong>@Html.Money(100)</strong></li>
+                            }
+                            <li class="d-flex justify-content-between py-2"><span class="fs-5">Toplam</span><strong class="text-primary fs-4">@Html.Money(extraCost)</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kart formu -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        @if (TempData["PayError"] != null)
+                        {
+                            <div class="alert alert-danger py-2"><i class="bi bi-exclamation-triangle"></i> @TempData["PayError"]</div>
+                        }
+                        <h5 class="mb-3">Kart Bilgileri</h5>
+                        <form method="post" action="/Flight/CheckInPaymentComplete" id="ciPayForm">
+                            <input type="hidden" name="pnr" value="@ViewBag.Pnr" />
+                            <input type="hidden" name="passengerIndex" value="@ViewBag.PassengerIndex" />
+                            <input type="hidden" name="seatNumber" value="@ViewBag.SeatNumber" />
+                            <input type="hidden" name="extraBaggageKg" value="@baggage" />
+                            <input type="hidden" name="mealType" value="@meal" />
+                            <input type="hidden" name="seatUpgrade" value="@(upgrade ? "true" : "false")" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Kart Numarası</label>
+                                <input id="cardNum" name="cardNumber" inputmode="numeric" maxlength="19" class="form-control form-control-lg" placeholder="0000 0000 0000 0000" required />
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label">Son Kullanma (AA/YY)</label>
+                                    <input id="cardExp" name="cardExpiry" maxlength="5" class="form-control form-control-lg" placeholder="12/28" required />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">CVV</label>
+                                    <input id="cardCvv" name="cardCvv" inputmode="numeric" maxlength="3" class="form-control form-control-lg" placeholder="123" required />
+                                </div>
+                            </div>
+                            <button class="btn btn-lg w-100 mt-4" style="background:#16a34a; color:#fff;"><i class="bi bi-lock-fill"></i> @Html.Money(extraCost) Öde ve Check-in'i Tamamla</button>
+                            <div class="text-center small text-muted mt-2"><i class="bi bi-shield-check"></i> Demo ödeme — gerçek tahsilat yapılmaz.</div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var num = document.getElementById('cardNum');
+        var exp = document.getElementById('cardExp');
+        var cvv = document.getElementById('cardCvv');
+        num.addEventListener('input', function () {
+            var v = this.value.replace(/\D/g, '').slice(0, 16);
+            this.value = v.replace(/(.{4})/g, '$1 ').trim();
+        });
+        exp.addEventListener('input', function () {
+            var v = this.value.replace(/\D/g, '').slice(0, 4);
+            if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+            this.value = v;
+        });
+        cvv.addEventListener('input', function () { this.value = this.value.replace(/\D/g, ''); });
+        document.getElementById('ciPayForm').addEventListener('submit', function (e) {
+            if (num.value.replace(/\s/g, '').length !== 16) { e.preventDefault(); alert('Kart numarası 16 haneli olmalı.'); return; }
+            if (cvv.value.length !== 3) { e.preventDefault(); alert('CVV 3 haneli olmalı.'); return; }
+        });
+    </script>
+}
