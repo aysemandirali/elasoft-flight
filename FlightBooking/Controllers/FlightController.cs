@@ -176,10 +176,35 @@ namespace FlightBooking.Controllers
 
         // Müşteri check-in'i tamamla: ek hizmet ücreti varsa önce ödeme ekranına,
         // yoksa doğrudan check-in'i uygula.
+        // Bir koltuk, aynı uçuşta başka bir yolcuya atanmış mı? (kendisi hariç)
+        private async Task<bool> IsSeatTakenAsync(Booking booking, int passengerIndex, string seat)
+        {
+            if (string.IsNullOrWhiteSpace(seat)) return false;
+            var all = await _bookingService.GetAllRawAsync();
+            foreach (var b in all.Where(x => x.FlightId == booking.FlightId))
+                for (int i = 0; i < b.Passengers.Count; i++)
+                {
+                    if (b.PnrNumber == booking.PnrNumber && i == passengerIndex) continue; // yolcunun kendisi
+                    if (string.Equals(b.Passengers[i].SeatNumber, seat, StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+            return false;
+        }
+
         [HttpPost]
         public async Task<IActionResult> CheckInComplete(string pnr, int passengerIndex, string seatNumber,
                                                          int extraBaggageKg, string? mealType, bool seatUpgrade)
         {
+            var target = await _bookingService.GetByPnrAsync(pnr);
+            if (target == null) return RedirectToAction("CheckIn", new { pnr });
+
+            // Koltuk başka yolcuya aitse check-in'i engelle
+            if (await IsSeatTakenAsync(target, passengerIndex, seatNumber))
+            {
+                TempData["CheckInError"] = $"{seatNumber} koltuğu dolu. Lütfen başka bir koltuk seçin.";
+                return RedirectToAction("CheckIn", new { pnr });
+            }
+
             var extraCost = _checkInService.CalculateExtraCost(extraBaggageKg, mealType, seatUpgrade);
 
             if (extraCost > 0)
@@ -230,6 +255,14 @@ namespace FlightBooking.Controllers
             {
                 TempData["PayError"] = "Kart bilgileri geçersiz. Kart numarası 16 hane, CVV 3 hane ve son kullanma AA/YY biçiminde olmalı.";
                 return RedirectToAction("CheckInPayment", new { pnr, passengerIndex, seatNumber, extraBaggageKg, mealType, seatUpgrade });
+            }
+
+            // Ödeme sırasında koltuk başkası tarafından alındıysa engelle
+            var target = await _bookingService.GetByPnrAsync(pnr);
+            if (target != null && await IsSeatTakenAsync(target, passengerIndex, seatNumber))
+            {
+                TempData["CheckInError"] = $"{seatNumber} koltuğu bu sırada dolduğu için işlem tamamlanamadı. Lütfen başka bir koltuk seçin.";
+                return RedirectToAction("CheckIn", new { pnr });
             }
 
             await _checkInService.CheckInPassengerAsync(pnr, passengerIndex, seatNumber, extraBaggageKg, mealType, seatUpgrade);
