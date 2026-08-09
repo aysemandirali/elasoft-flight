@@ -39,15 +39,31 @@ namespace FlightBooking.AgentServices
                 }
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, url);
-            request.Headers.Add("X-goog-api-key", _settings.ApiKey);
-            request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+            var json = JsonSerializer.Serialize(payload);
 
-            var response = await _httpClient.SendAsync(request);
-            var body = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response;
+            string body;
+            int attempt = 0;
 
-            if (!response.IsSuccessStatusCode)
-                return "Asistana su an ulasilamadi. (Hata kodu: " + (int)response.StatusCode + ")";
+            // 429 (kota) veya 503 (mesgul) durumunda kisa beklemeyle tekrar dene
+            while (true)
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                request.Headers.Add("X-goog-api-key", _settings.ApiKey);
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                response = await _httpClient.SendAsync(request);
+                body = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) break;
+
+                var retryable = (int)response.StatusCode == 429 || (int)response.StatusCode == 503;
+                if (!retryable || attempt >= 2)
+                    return "__ERROR__" + (int)response.StatusCode;
+
+                attempt++;
+                await Task.Delay(1500 * attempt);
+            }
 
             try
             {
