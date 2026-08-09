@@ -28,7 +28,9 @@
         border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.18); padding: 6px;
         display: none; z-index: 3000; margin-top: 6px;
     }
-    .pref-dd:hover .pref-menu { display: block; }
+    .pref-dd.open .pref-menu { display: block; }
+    .pref-dd .caret { transition: transform .18s; }
+    .pref-dd.open .caret { transform: rotate(180deg); }
     .pref-menu a {
         display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 7px;
         color: #334155 !important; font-size: 13.5px; text-decoration: none; white-space: nowrap;
@@ -37,6 +39,21 @@
     .pref-menu a.active { color: #1d4ed8 !important; font-weight: 600; background: #eff6ff; }
     .pref-menu a.soon { opacity: .55; }
 </style>
+<script>
+    // Para birimi / dil dropdown'u: tıklayınca açılır ve açık kalır (hover değil)
+    document.addEventListener('click', function (e) {
+        var trig = e.target.closest('.pref-trigger');
+        if (trig) {
+            e.preventDefault();
+            var dd = trig.closest('.pref-dd');
+            var wasOpen = dd.classList.contains('open');
+            document.querySelectorAll('.pref-dd.open').forEach(function (d) { d.classList.remove('open'); });
+            if (!wasOpen) dd.classList.add('open');
+        } else if (!e.target.closest('.pref-menu')) {
+            document.querySelectorAll('.pref-dd.open').forEach(function (d) { d.classList.remove('open'); });
+        }
+    });
+</script>
   <!-- preloader -->
 <div id="preloader">
     <div id="loading-center">
@@ -68,7 +85,7 @@
                         <ul>
                             <li><a href="/Account/AdminLogin" style="font-weight:600;"><i class="fa-solid fa-shield-halved"></i> Yönetici Girişi</a></li>
                             <li class="pref-dd">
-                                <a><i class="fa-solid fa-coins"></i> @curLabel <i class="fa-solid fa-angle-down caret"></i></a>
+                                <a class="pref-trigger" href="#" onclick="return false;"><i class="fa-solid fa-coins"></i> @curLabel <i class="fa-solid fa-angle-down caret"></i></a>
                                 <div class="pref-menu">
                                     <a class="@(curCode == "TRY" ? "active" : "")" href="/Preferences/SetCurrency?code=TRY&returnUrl=@RetEnc(ret)"><span class="cur-sym">₺</span> Türk Lirası (TRY)</a>
                                     <a class="@(curCode == "USD" ? "active" : "")" href="/Preferences/SetCurrency?code=USD&returnUrl=@RetEnc(ret)"><span class="cur-sym">$</span> ABD Doları (USD)</a>
@@ -76,7 +93,7 @@
                                 </div>
                             </li>
                             <li class="pref-dd">
-                                <a>@Html.Raw(langCode == "en" ? gbFlag : trFlag) <span>@(langCode == "en" ? "English" : "Türkçe")</span> <i class="fa-solid fa-angle-down caret"></i></a>
+                                <a class="pref-trigger" href="#" onclick="return false;">@Html.Raw(langCode == "en" ? gbFlag : trFlag) <span>@(langCode == "en" ? "English" : "Türkçe")</span> <i class="fa-solid fa-angle-down caret"></i></a>
                                 <div class="pref-menu">
                                     <a class="@(langCode == "tr" ? "active" : "")" href="/Preferences/SetLanguage?code=tr&returnUrl=@RetEnc(ret)">@Html.Raw(trFlag) <span>Türkçe</span></a>
                                     <a class="soon" title="İngilizce çeviri yakında" href="/Preferences/SetLanguage?code=en&returnUrl=@RetEnc(ret)">@Html.Raw(gbFlag) <span>English (yakında)</span></a>
