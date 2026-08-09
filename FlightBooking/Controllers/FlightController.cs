@@ -48,6 +48,15 @@ namespace FlightBooking.Controllers
         public async Task<IActionResult> Book(string id)
         {
             var flight = await _flightService.GetFlightByIdAsync(id);
+
+            // Giriş yapan müşterinin bilgilerini forma önceden doldur
+            // (böylece rezervasyon otomatik olarak hesabına bağlanır)
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                ViewBag.UserName = User.Identity.Name;
+                ViewBag.UserEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            }
+
             return View(flight);
         }
 

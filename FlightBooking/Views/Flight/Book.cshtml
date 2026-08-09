@@ -35,9 +35,13 @@
                 <input type="hidden" name="FlightId" value="@Model.FlightId" />
 
                 <h6 class="text-muted mb-3"><i class="bi bi-person-lines-fill"></i> İletişim Bilgileri</h6>
+                @if (ViewBag.UserEmail != null)
+                {
+                    <div class="alert alert-info py-2 small"><i class="bi bi-info-circle"></i> Giriş yaptığınız için bu rezervasyon <strong>@ViewBag.UserEmail</strong> hesabınıza bağlanacak ve Seyahatlerim'de görünecek.</div>
+                }
                 <div class="row g-3">
-                    <div class="col-md-4"><label class="form-label">Ad Soyad</label><input name="ContactName" class="form-control" required /></div>
-                    <div class="col-md-4"><label class="form-label">E-posta</label><input name="ContactEmail" type="email" class="form-control" required /></div>
+                    <div class="col-md-4"><label class="form-label">Ad Soyad</label><input name="ContactName" value="@ViewBag.UserName" class="form-control" required /></div>
+                    <div class="col-md-4"><label class="form-label">E-posta</label><input name="ContactEmail" type="email" value="@ViewBag.UserEmail" class="form-control" required /></div>
                     <div class="col-md-4"><label class="form-label">Telefon</label><input name="ContactPhone" class="form-control" required /></div>
                 </div>
 
