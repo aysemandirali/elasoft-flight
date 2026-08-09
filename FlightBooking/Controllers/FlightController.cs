@@ -2,6 +2,7 @@
 using FlightBooking.Entities;
 using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.CheckInServices;
+using FlightBooking.Services.EmailServices;
 using FlightBooking.Services.FlightServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,12 +14,14 @@ namespace FlightBooking.Controllers
         private readonly IFlightService _flightService;
         private readonly IBookingService _bookingService;
         private readonly ICheckInService _checkInService;
+        private readonly IEmailService _emailService;
 
-        public FlightController(IFlightService flightService, IBookingService bookingService, ICheckInService checkInService)
+        public FlightController(IFlightService flightService, IBookingService bookingService, ICheckInService checkInService, IEmailService emailService)
         {
             _flightService = flightService;
             _bookingService = bookingService;
             _checkInService = checkInService;
+            _emailService = emailService;
         }
 
         // Ucus listesi + basit arama (kalkis/varis koduna gore)
@@ -53,6 +56,15 @@ namespace FlightBooking.Controllers
         public async Task<IActionResult> Book(CreateBookingDto dto)
         {
             var pnr = await _bookingService.CreateBookingAsync(dto);
+
+            // Rezervasyon onay e-postasını gönder (hata olsa da akış devam eder)
+            var booking = await _bookingService.GetByPnrAsync(pnr);
+            if (booking != null)
+            {
+                var flight = await _flightService.GetFlightByIdAsync(booking.FlightId);
+                await _emailService.SendBookingConfirmationAsync(booking, flight);
+            }
+
             return RedirectToAction("Payment", new { pnr });
         }
 

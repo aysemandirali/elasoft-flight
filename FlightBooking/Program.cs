@@ -40,6 +40,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<FlightBooking.Services.CarRentalServices.ICarRentalService, FlightBooking.Services.CarRentalServices.CarRentalService>();
 builder.Services.AddScoped<FlightBooking.Services.TourServices.ITourService, FlightBooking.Services.TourServices.TourService>();
 builder.Services.AddScoped<FlightBooking.Services.TransferServices.ITransferService, FlightBooking.Services.TransferServices.TransferService>();
+builder.Services.AddScoped<FlightBooking.Services.EmailServices.IEmailService, FlightBooking.Services.EmailServices.EmailService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
