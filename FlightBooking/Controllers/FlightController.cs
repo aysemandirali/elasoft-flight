@@ -92,12 +92,23 @@ namespace FlightBooking.Controllers
             return View(booking);
         }
 
-        // Odemeyi tamamla (simulasyon): kart bilgileri dogru formatta ise odendi say
+        // Odemeyi tamamla (simulasyon): kart bilgileri dogru formatta ise odendi say.
+        // Sunucu tarafi dogrulama; kart bilgisi saklanmaz, sadece format kontrol edilir.
         [HttpPost]
-        public async Task<IActionResult> PaymentComplete(string pnr)
+        public async Task<IActionResult> PaymentComplete(string pnr, string? cardNumber, string? cardExpiry, string? cardCvv)
         {
             var booking = await _bookingService.GetByPnrAsync(pnr);
             if (booking == null) return RedirectToAction("Index");
+
+            var digits = new string((cardNumber ?? "").Where(char.IsDigit).ToArray());
+            var cvvDigits = new string((cardCvv ?? "").Where(char.IsDigit).ToArray());
+            var expOk = System.Text.RegularExpressions.Regex.IsMatch(cardExpiry ?? "", @"^(0[1-9]|1[0-2])\/\d{2}$");
+
+            if (digits.Length != 16 || cvvDigits.Length != 3 || !expOk)
+            {
+                TempData["PayError"] = "Kart bilgileri geçersiz. Kart numarası 16 hane, CVV 3 hane ve son kullanma AA/YY biçiminde olmalı.";
+                return RedirectToAction("Payment", new { pnr });
+            }
 
             await _bookingService.MarkAsPaidAsync(pnr);
             return RedirectToAction("Confirmation", new { pnr });

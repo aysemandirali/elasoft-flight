@@ -64,24 +64,28 @@
                             </div>
                         </div>
 
+                        @if (TempData["PayError"] != null)
+                        {
+                            <div class="alert alert-danger py-2"><i class="bi bi-exclamation-triangle"></i> @TempData["PayError"]</div>
+                        }
                         <form method="post" action="/Flight/PaymentComplete" id="payForm">
                             <input type="hidden" name="pnr" value="@Model.PnrNumber" />
                             <div class="mb-3">
                                 <label class="form-label">Kart Numarası</label>
-                                <input id="cardNum" inputmode="numeric" maxlength="19" class="form-control form-control-lg" placeholder="0000 0000 0000 0000" required />
+                                <input id="cardNum" name="cardNumber" inputmode="numeric" maxlength="19" class="form-control form-control-lg" placeholder="0000 0000 0000 0000" required />
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Kart Üzerindeki İsim</label>
-                                <input id="cardName" class="form-control form-control-lg" placeholder="Ad Soyad" required />
+                                <input id="cardName" name="cardName" class="form-control form-control-lg" placeholder="Ad Soyad" required />
                             </div>
                             <div class="row g-3">
                                 <div class="col-6">
                                     <label class="form-label">Son Kullanma (AA/YY)</label>
-                                    <input id="cardExp" maxlength="5" class="form-control form-control-lg" placeholder="12/28" required />
+                                    <input id="cardExp" name="cardExpiry" maxlength="5" class="form-control form-control-lg" placeholder="12/28" required />
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label">CVV</label>
-                                    <input id="cardCvv" inputmode="numeric" maxlength="3" class="form-control form-control-lg" placeholder="123" required />
+                                    <input id="cardCvv" name="cardCvv" inputmode="numeric" maxlength="3" class="form-control form-control-lg" placeholder="123" required />
                                 </div>
                             </div>
 
