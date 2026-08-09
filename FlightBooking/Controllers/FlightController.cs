@@ -151,6 +151,17 @@ namespace FlightBooking.Controllers
             return RedirectToAction("CheckIn", new { pnr });
         }
 
+        // Müşteri kendi rezervasyonunu iptal eder (PNR ile)
+        [HttpPost]
+        public async Task<IActionResult> CancelBooking(string pnr)
+        {
+            var booking = await _bookingService.GetByPnrAsync(pnr);
+            if (booking != null && booking.Status != "Cancelled")
+                await _bookingService.CancelBookingAsync(pnr);
+
+            return RedirectToAction("MyBooking", new { pnr });
+        }
+
         // Uçuş durumu sorgulama: uçuş numarasına göre uçuşları ve durumlarını göster
         [HttpGet]
         public async Task<IActionResult> FlightStatus(string? flightNumber)

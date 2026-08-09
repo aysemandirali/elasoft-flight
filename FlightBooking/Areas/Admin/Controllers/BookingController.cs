@@ -27,6 +27,16 @@ namespace FlightBooking.Areas.Admin.Controllers
             return View(values);
         }
 
+        // Rezervasyonu iptal et, sonra listeye don
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(string pnr)
+        {
+            if (!string.IsNullOrWhiteSpace(pnr))
+                await _bookingService.CancelBookingAsync(pnr);
+            return RedirectToAction("BookingList");
+        }
+
         // Yeni rezervasyon formu — ucuslari acilir listeye doldur
         [HttpGet]
         public async Task<IActionResult> CreateBooking()

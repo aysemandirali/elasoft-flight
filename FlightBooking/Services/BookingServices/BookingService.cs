@@ -71,6 +71,12 @@ namespace FlightBooking.Services.BookingServices
             await _bookingCollection.UpdateOneAsync(x => x.PnrNumber == pnr, update);
         }
 
+        public async Task CancelBookingAsync(string pnr)
+        {
+            var update = Builders<Booking>.Update.Set(x => x.Status, "Cancelled");
+            await _bookingCollection.UpdateOneAsync(x => x.PnrNumber == pnr, update);
+        }
+
         public async Task<List<ResultBookingDto>> GetAllBookingsAsync()
         {
             var bookings = await _bookingCollection.Find(x => true).ToListAsync();

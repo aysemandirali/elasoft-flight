@@ -29,6 +29,7 @@
                         <th>Tarih</th>
                         <th>Durum</th>
                         <th>Ödeme</th>
+                        <th>İşlem</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,6 +52,19 @@
                                 else
                                 {
                                     <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Bekliyor</span>
+                                }
+                            </td>
+                            <td>
+                                @if (b.Status == "Cancelled")
+                                {
+                                    <span class="text-muted small">—</span>
+                                }
+                                else
+                                {
+                                    <form method="post" asp-action="Cancel" onsubmit="return confirm('@b.PnrNumber numaralı rezervasyonu iptal etmek istediğinize emin misiniz?');" class="d-inline">
+                                        <input type="hidden" name="pnr" value="@b.PnrNumber" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i> İptal</button>
+                                    </form>
                                 }
                             </td>
                         </tr>
