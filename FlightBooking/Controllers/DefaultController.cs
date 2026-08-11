@@ -8,5 +8,13 @@ namespace FlightBooking.Controllers
         {
             return View();
         }
+
+        // Beklenmedik hata ve bulunamayan sayfalar icin ortak ekran.
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public IActionResult Error(int? code)
+        {
+            ViewBag.Code = code;
+            return View();
+        }
     }
 }

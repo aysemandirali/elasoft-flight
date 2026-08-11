@@ -58,6 +58,8 @@ namespace FlightBooking.Services.TourServices
 
         public async Task<Tour?> GetByIdAsync(string id)
         {
+            // Bozuk bir kimlik gelirse sorgu calistirilmaz.
+            if (!MongoDB.Bson.ObjectId.TryParse(id, out _)) return null;
             return await _tours.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 

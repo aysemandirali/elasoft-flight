@@ -39,6 +39,10 @@ namespace FlightBooking.Services.FlightServices
 
         public async Task<GetFlightByIdDto> GetFlightByIdAsync(string id)
         {
+            // Adres cubugundan bozuk bir kimlik gelirse sorgu calistirilmadan bos donulur.
+            if (!MongoDB.Bson.ObjectId.TryParse(id, out _))
+                return null!;
+
             var value = await _flightCollection.Find(x => x.FlightId == id).FirstOrDefaultAsync();
             return _mapper.Map<GetFlightByIdDto>(value);
         }

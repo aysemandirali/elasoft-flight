@@ -1,0 +1,40 @@
+@{
+    Layout = "_PublicLayout";
+    var code = ViewBag.Code as int?;
+    var notFound = code == 404;
+    ViewData["Title"] = notFound ? "Sayfa Bulunamadı" : "Bir Sorun Oluştu";
+    ViewBag.PageTitle = notFound ? "Sayfa Bulunamadı" : "Bir Sorun Oluştu";
+    ViewBag.PageSubtitle = notFound
+        ? "Aradığınız sayfa taşınmış veya hiç var olmamış olabilir"
+        : "İşleminiz sırasında beklenmedik bir durum oluştu";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm text-center p-5">
+            <div>
+                <i class="bi @(notFound ? "bi-compass" : "bi-exclamation-triangle") text-primary" style="font-size:64px;"></i>
+            </div>
+
+            @if (code.HasValue)
+            {
+                <div class="fw-bold text-muted mt-3" style="font-size:44px; letter-spacing:4px;">@code</div>
+            }
+
+            <h4 class="mt-2">
+                @(notFound ? "Bu sayfayı bulamadık" : "Bir şeyler ters gitti")
+            </h4>
+            <p class="text-muted">
+                @(notFound
+                    ? "Bağlantı hatalı olabilir. Aşağıdaki bölümlerden devam edebilirsiniz."
+                    : "Lütfen birazdan tekrar deneyin. Sorun sürerse ana sayfadan işleminize devam edebilirsiniz.")
+            </p>
+
+            <div class="d-grid gap-2 mt-3 mx-auto" style="max-width:420px;">
+                <a href="/" class="btn btn-lg" style="background:#1d4ed8; color:#fff;"><i class="bi bi-house-door"></i> Ana Sayfa</a>
+                <a href="/Flight/Index" class="btn btn-outline-primary">Uçuş Ara</a>
+                <a href="/Flight/MyBooking" class="btn btn-outline-secondary">Seyahatlerim</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -49,6 +49,9 @@ namespace FlightBooking.Controllers
         {
             var flight = await _flightService.GetFlightByIdAsync(id);
 
+            // Uçuş bulunamazsa (bozuk veya eski bağlantı) listeye geri dön
+            if (flight == null) return RedirectToAction("Index");
+
             // Giriş yapan müşterinin bilgilerini forma önceden doldur
             // (böylece rezervasyon otomatik olarak hesabına bağlanır)
             if (User.Identity?.IsAuthenticated == true)

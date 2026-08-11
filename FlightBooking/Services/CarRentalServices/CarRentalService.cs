@@ -61,6 +61,8 @@ namespace FlightBooking.Services.CarRentalServices
 
         public async Task<Car?> GetByIdAsync(string id)
         {
+            // Bozuk bir kimlik gelirse sorgu calistirilmaz.
+            if (!MongoDB.Bson.ObjectId.TryParse(id, out _)) return null;
             return await _cars.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 
