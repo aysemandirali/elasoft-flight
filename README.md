@@ -104,9 +104,18 @@ Uygulama ilk açılışta aşağıdaki hesapları otomatik oluşturur (giriş ek
 - Overbooking ve ML tahmin sayfalarındaki **"Örnek Veri Yükle"** butonuyla tahmin modelleri için demo verisi oluşturabilirsiniz.
 - Ödeme ekranını denemek için örnek kart: `4242 4242 4242 4242`, son kullanma `12/28`, CVV `123`.
 
+## 🧪 Testler
+
+İş kurallarını doğrulayan **51 birim testi** bulunuyor (xUnit). Testler; ödeme ekranındaki kart doğrulamasını, check-in ek hizmet ücreti hesabını, para birimi dönüşümünü ve AI asistanının niyet tespitini kapsar. Veritabanı bağlantısı gerektirmezler.
+
+```bash
+dotnet test
+```
+
 ## 📁 Proje Yapısı
 
 ```
+FlightBooking.Tests/    # xUnit birim testleri (ödeme, ek hizmet, para birimi, agent)
 FlightBooking/
 ├── Areas/Admin/        # Yönetici paneli (controller, view, component)
 ├── Controllers/        # Public controller'lar (Default, Flight, CarRental, Tour,
