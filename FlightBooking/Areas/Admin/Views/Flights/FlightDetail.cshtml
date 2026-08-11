@@ -8,6 +8,7 @@
     <h3 class="mb-4"><i class="bi bi-airplane"></i> Uçuş Detayı — @Model.FlightNumber</h3>
 
     <div class="card shadow-sm">
+        <div class="table-responsive">
         <table class="table m-0">
             <tr><th style="width:220px;">Uçuş No</th><td>@Model.FlightNumber</td></tr>
             <tr><th>Havayolu</th><td>@Model.AirlineCode</td></tr>
@@ -20,6 +21,7 @@
             <tr><th>Fiyat</th><td>@Model.BasePrice @Model.Currency</td></tr>
             <tr><th>Durum</th><td><span class="badge bg-secondary">@(Model.Status switch { "Scheduled" => "Planlandı", "Delayed" => "Gecikmeli", "Cancelled" => "İptal Edildi", "Completed" => "Tamamlandı", "Boarding" => "Biniş", _ => Model.Status })</span></td></tr>
         </table>
+        </div>
     </div>
 
     <a asp-action="FlightList" class="btn btn-outline-secondary mt-3">← Listeye Dön</a>
